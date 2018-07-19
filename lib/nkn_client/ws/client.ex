@@ -3,7 +3,12 @@ defmodule NknClient.WS.Client do
   require Logger
 
   def start_link(url) do
-    WebSockex.start_link(url, __MODULE__, url)
+    WebSockex.start_link(url, __MODULE__, url, name: __MODULE__)
+  end
+
+  def send(msg) do
+    Logger.debug("Sending: #{msg}")
+    WebSockex.send_frame(__MODULE__, msg)
   end
 
   def handle_connect(_conn, state) do
@@ -12,7 +17,7 @@ defmodule NknClient.WS.Client do
   end
 
   def handle_frame(msg, state) do
-    Logger.info("Msg: #{inspect(msg)}")
+    Logger.debug("Msg: #{inspect(msg)}")
     {:ok, state}
   end
 
