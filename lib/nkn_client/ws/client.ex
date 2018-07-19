@@ -7,7 +7,7 @@ defmodule NknClient.WS.Client do
   end
 
   def send(msg) do
-    Logger.debug("Sending: #{msg}")
+    Logger.debug("Sending: #{inspect(msg)}")
     WebSockex.send_frame(__MODULE__, msg)
   end
 

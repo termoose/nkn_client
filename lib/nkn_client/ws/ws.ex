@@ -8,16 +8,21 @@ defmodule NknClient.WS do
   end
 
   def init(ping_freq) do
-    #send(__MODULE__, :ping)
+    %{"Action" => "setClient",
+      "Addr" => "client.0396afc4d7ea198d8c3986ba6ed509f4d8d8635804a63571339cb6104a6a279858"}
+    |> Poison.encode!
+    |> send_txt
+
     {:ok, ping_freq}
   end
 
-  def send_bin(bin) do
-    Client.send({:binary, bin})
-  end
-
-  def send_txt(msg) do
-    Client.send({:text, msg})
+  def send(dest, payload) do
+    %{"Action" => "sendPacket",
+      "Dest" => dest,
+      "Payload" => payload,
+      "Signature" => ""}
+    |> Poison.encode!
+    |> send_txt
   end
 
   def handle_info(:ping, ping_freq) do
@@ -25,5 +30,13 @@ defmodule NknClient.WS do
     Process.send_after(__MODULE__, :ping, 1000 * ping_freq)
 
     {:noreply, ping_freq}
+  end
+
+  defp send_bin(bin) do
+    Client.send({:binary, bin})
+  end
+
+  defp send_txt(msg) do
+    Client.send({:text, msg})
   end
 end

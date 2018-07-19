@@ -12,7 +12,7 @@ defmodule NknClient do
       :world
 
   """
-  def hello do
-    :world
+  def send(dest, msg) do
+
   end
 end
