@@ -40,14 +40,14 @@ defmodule NknClient.Crypto.Keys do
              public_key: pub}
   end
 
-  defp compress(<<04,
+  defp compress(<< 04,
                 x :: binary-size(32),
-                y :: binary-size(32)>>) do
+                y :: binary-size(32) >>) do
     << _ :: binary-size(31), last >> = y
 
     case Integer.is_even(last) do
-      true  -> <<02, x :: binary>>
-      false -> <<03, x :: binary>>
+      true  -> << 02, x :: binary >>
+      false -> << 03, x :: binary >>
     end
   end
 

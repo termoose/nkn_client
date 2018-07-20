@@ -1,6 +1,7 @@
 defmodule NknClient.WS.Client do
   use WebSockex
   require Logger
+  alias NknClient.WS.MessageHandler
 
   def start_link(url) do
     WebSockex.start_link(url, __MODULE__, url, name: __MODULE__)
@@ -16,8 +17,13 @@ defmodule NknClient.WS.Client do
     {:ok, state}
   end
 
+  def handle_frame({:text, msg}, state) do
+    MessageHandler.ingest_txt(msg)
+    {:ok, state}
+  end
+
   def handle_frame(msg, state) do
-    Logger.debug("Msg: #{inspect(msg)}")
+    Logger.debug("Unknown message type: #{inspect(msg)}")
     {:ok, state}
   end
 

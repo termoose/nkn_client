@@ -10,7 +10,8 @@ defmodule NknClient.WS.Supervisor do
   def init(:ok) do
     children = [
       {WS.Client, "ws://#{RPC.Client.get_ws_address()}"},
-      {WS, :ok},
+      {WS.MessageHandler, []},
+      {WS, :ok}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
