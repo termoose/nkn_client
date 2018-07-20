@@ -26,7 +26,11 @@ defmodule NknClient.Crypto.Keys do
   end
 
   def handle_call(:get_public, _from, keys) do
-    {:reply, keys.public_key |> compress |> encode, keys}
+    {:reply,
+     keys.public_key
+     |> compress
+     |> encode,
+     keys}
   end
 
   def get_priv_pub do
@@ -36,14 +40,12 @@ defmodule NknClient.Crypto.Keys do
              public_key: pub}
   end
 
-  def compress(<<4, x :: binary-size(32), y :: binary-size(32)>>) do
-    << _ :: binary-size(31), last :: integer >> = y
+  def compress(<<04, x :: binary-size(32), y :: binary-size(32)>>) do
+    << _ :: binary-size(31), last >> = y
 
     case Integer.is_even(last) do
-      true ->
-        << 02, x :: binary >>
-      false ->
-        << 03, x :: binary >>
+      true  -> << 02, x :: binary >>
+      false -> << 03, x :: binary >>
     end
   end
 
