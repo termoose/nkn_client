@@ -16,7 +16,7 @@ defmodule NknClient.Crypto.Keys do
   end
 
   # Generate private key
-  def init(%KeyData{private_key: nil} = key_data) do
+  def init(%KeyData{private_key: nil}) do
     {:ok, get_priv_pub()}
   end
 
@@ -34,18 +34,20 @@ defmodule NknClient.Crypto.Keys do
   end
 
   def get_priv_pub do
-    {pub, priv} = :crypto.generate_key(:ecdh, :secp256k1)
+    {pub, priv} = :crypto.generate_key(:ecdh, :secp256r1)
 
     %KeyData{private_key: priv,
              public_key: pub}
   end
 
-  def compress(<<04, x :: binary-size(32), y :: binary-size(32)>>) do
+  defp compress(<<04,
+                x :: binary-size(32),
+                y :: binary-size(32)>>) do
     << _ :: binary-size(31), last >> = y
 
     case Integer.is_even(last) do
-      true  -> << 02, x :: binary >>
-      false -> << 03, x :: binary >>
+      true  -> <<02, x :: binary>>
+      false -> <<03, x :: binary>>
     end
   end
 
