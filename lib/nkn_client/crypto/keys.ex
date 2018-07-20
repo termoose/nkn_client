@@ -1,6 +1,7 @@
 defmodule NknClient.Crypto.Keys do
   use GenServer
   require Logger
+  require Integer
   alias NknClient.Crypto.KeyData
 
   def start_link(private_key) do
@@ -25,16 +26,25 @@ defmodule NknClient.Crypto.Keys do
   end
 
   def handle_call(:get_public, _from, keys) do
-    {:reply, keys.public_key, keys}
+    {:reply, keys.public_key |> compress |> encode, keys}
   end
 
-  defp get_priv_pub do
-    keys = :crypto.generate_key(:ecdh, :secp256k1)
-    |> Tuple.to_list
-    |> Enum.map(&encode/1)
+  def get_priv_pub do
+    {pub, priv} = :crypto.generate_key(:ecdh, :secp256k1)
 
-    %KeyData{private_key: Enum.at(keys, 0),
-             public_key: Enum.at(keys, 1)}
+    %KeyData{private_key: priv,
+             public_key: pub}
+  end
+
+  def compress(<<4, x :: binary-size(32), y :: binary-size(32)>>) do
+    << _ :: binary-size(31), last :: integer >> = y
+
+    case Integer.is_even(last) do
+      true ->
+        << 02, x :: binary >>
+      false ->
+        << 03, x :: binary >>
+    end
   end
 
   defp encode(key) do

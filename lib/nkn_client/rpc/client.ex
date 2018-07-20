@@ -5,7 +5,7 @@ defmodule NknClient.RPC.Client do
 
   def get_ws_address() do
     {:ok, host} = HTTP.call(@url, "getwsaddr",
-                            %{"address" => "ex.#{NknClient.Crypto.public_key()}"})
+                            %{"address" => "#{NknClient.Crypto.public_key()}"})
 
     host
   end
