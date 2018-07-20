@@ -10,8 +10,8 @@ defmodule NknClient.Application do
 
     # List all child processes to be supervised
     children = [
-      supervisor(NknClient.WS.Supervisor, []),
-      supervisor(NknClient.Crypto.Supervisor, [])
+      supervisor(NknClient.Crypto.Supervisor, []),
+      supervisor(NknClient.WS.Supervisor, [])
       # Starts a worker by calling: NknClient.Worker.start_link(arg)
       # {NknClient.Worker, arg},
     ]

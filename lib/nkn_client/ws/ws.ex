@@ -9,7 +9,7 @@ defmodule NknClient.WS do
 
   def init(ping_freq) do
     %{"Action" => "setClient",
-      "Addr" => "client.0396afc4d7ea198d8c3986ba6ed509f4d8d8635804a63571339cb6104a6a279858"}
+      "Addr" => "ex.#{NknClient.Crypto.public_key()}"}
     |> Poison.encode!
     |> send_txt
 

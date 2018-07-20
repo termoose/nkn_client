@@ -29,7 +29,7 @@ defmodule NknClient.Crypto.Keys do
   end
 
   defp get_priv_pub do
-    keys = :crypto.generate_key(:ecdh, :secp256r1)
+    keys = :crypto.generate_key(:ecdh, :secp256k1)
     |> Tuple.to_list
     |> Enum.map(&encode/1)
 
