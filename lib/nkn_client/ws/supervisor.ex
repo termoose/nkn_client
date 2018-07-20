@@ -11,6 +11,9 @@ defmodule NknClient.WS.Supervisor do
     children = [
       {WS.Client, "ws://#{RPC.Client.get_ws_address()}"},
       {WS.MessageHandler, []},
+      {WS.MessageSink, []},
+      {WS.MessageRouter, []},
+      {WS.MessageConsumer, :some_state},
       {WS, :ok}
     ]
 

@@ -1,7 +1,7 @@
 defmodule NknClient.WS.Client do
   use WebSockex
   require Logger
-  alias NknClient.WS.MessageHandler
+  alias NknClient.WS.MessageSink
 
   def start_link(url) do
     WebSockex.start_link(url, __MODULE__, url, name: __MODULE__)
@@ -18,7 +18,7 @@ defmodule NknClient.WS.Client do
   end
 
   def handle_frame({:text, msg}, state) do
-    MessageHandler.ingest_txt(msg)
+    MessageSink.handle(msg)
     {:ok, state}
   end
 
