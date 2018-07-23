@@ -11,15 +11,23 @@ defmodule NknClient.WS.MessageSink do
   end
 
   def init(messages) do
-    {:producer, messages}
+    {:producer, {:queue.new, 0}, dispatcher: GenStage.BroadcastDispatcher}
   end
 
-  def handle_cast({:handle, msg}, messages) do
-    {:noreply, [msg], messages}
+  def handle_cast({:handle, msg}, {queue, demand}) do
+    dispatch_events(:queue.in(msg, queue), demand, [])
   end
 
-  def handle_demand(demand, messages) do
-    {out_events, remaining_events} = Enum.split(messages, demand)
-    {:noreply, out_events, remaining_events}
+  def handle_demand(incoming_demand, {queue, demand}) do
+    dispatch_events(queue, incoming_demand + demand, [])
+  end
+
+  defp dispatch_events(queue, demand, events) do
+    with d when d > 0 <- demand,
+    {{:value, event}, queue} <- :queue.out(queue) do
+      dispatch_events(queue, demand - 1, [event | events])
+    else
+      _ -> {:noreply, Enum.reverse(events), {queue, demand}}      
+    end
   end
 end

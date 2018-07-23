@@ -7,11 +7,13 @@ defmodule NknClient.WS.MessageConsumer do
   end
 
   def init(state) do
-    {:consumer, state, subscribe_to: [NknClient.WS.MessageRouter]}
+    {:consumer, state, subscribe_to: [NknClient.WS.MessageSink]}
   end
 
-  def handle_events(event, _from, state) do
-    Logger.debug("Consumer event: #{inspect(event)}")
+  def handle_events(events, _from, state) do
+    for event <- events do
+      Logger.debug("Event: #{inspect(event)}")
+    end
     {:noreply, [], state}
   end
 end
