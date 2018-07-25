@@ -7,7 +7,20 @@ defmodule NknClient.MixProject do
       version: "0.1.0",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      description: "A client for sending and receiving messages on NKN",
+      source_url: "https://github.com/termoose/nkn_client",
+      package: package(),
+    ]
+  end
+
+  defp package do
+    [
+      name: "nkn_client",
+      licenses: ["MIT"],
+      files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
+      links: %{"GitHub" => "https://github.com/termoose/nkn_client",
+               "NKN" => "https://nkn.org/"}
     ]
   end
 

@@ -2,15 +2,15 @@ defmodule NknClient.WS.MessageSink do
   use GenStage
   require Logger
 
-  def start_link(messages) do
-    GenStage.start_link(__MODULE__, messages, name: __MODULE__)
+  def start_link([]) do
+    GenStage.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
   def handle(msg) do
     GenStage.cast(__MODULE__, {:handle, msg})
   end
 
-  def init(messages) do
+  def init(nil) do
     {:producer, {:queue.new, 0}, dispatcher: GenStage.BroadcastDispatcher}
   end
 
