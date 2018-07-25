@@ -17,7 +17,17 @@ defmodule User do
     Logger.debug("Event: #{inspect(event)}")
   end
 end
+```
 
+The module `User` can then but put in supervision tree or started manually
+
+```elixir
+{:ok, pid} = User.start_link(:ok)
+```
+
+Send packets to other users on the network
+
+```elixir
 iex> User.send_packet("some_address", "Hello, NKN!")
 
 ```
