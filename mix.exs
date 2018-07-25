@@ -35,7 +35,7 @@ defmodule NknClient.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:jsonrpc2, "~> 1.0"},
+      {:jsonrpc2, "~> 1.0.3"},
       {:poison, "~> 3.1"},
       {:hackney, "~> 1.7"},
       {:websockex, "~> 0.4.0"},
