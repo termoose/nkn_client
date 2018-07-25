@@ -6,7 +6,7 @@ defmodule NknClient do
 
   @callback handle_event(event :: any) :: any
 
-  defmacro __using__(_) do
+  defmacro __using__(opts) do
     quote do
       import Logger
       @behaviour NknClient
@@ -28,6 +28,14 @@ defmodule NknClient do
           module.handle_event(event |> Poison.decode!)
         end
         {:noreply, [], {module, state}}
+      end
+
+      def child_spec(state) do
+        %{
+          id: __MODULE__,
+          start: {__MODULE__, :start_link, [state]}
+        }
+        |> Supervisor.child_spec(unquote(Macro.escape(opts)))
       end
 
       defoverridable [handle_event: 1]
