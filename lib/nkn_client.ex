@@ -4,37 +4,37 @@ defmodule NknClient do
   """
   use GenStage
 
+  @callback handle_event(event :: any) :: any
+
   defmacro __using__(_) do
     quote do
+      import Logger
       @behaviour NknClient
 
+      def init(state) do
+        {:consumer, state, subscribe_to: [NknClient.WS.MessageSink]}
+      end
+
       def handle_event(event) do
-        IO.puts "Implement me!"
+        Logger.warn("No implementation for event: #{inspect(event)}")
+      end
+
+      def handle_events(events, _from, {module, state}) do
+        for {:text, event} <- events do
+          module.handle_event(event |> Poison.decode!)
+        end
+        {:noreply, [], {module, state}}
       end
 
       defoverridable [handle_event: 1]
     end
   end
   
-  @callback handle_event(event :: any) :: any
-  @callback handle_events(events :: any, from :: any, state :: any) :: any
-  
-  def start_link(state) do
-    GenStage.start_link(__MODULE__, state, name: __MODULE__)
+  def start_link(module, state) do
+    GenStage.start_link(module, {module, state}, name: module)
   end
 
   def init(state) do
     {:consumer, state, subscribe_to: [NknClient.WS.MessageSink]}
-  end
-
-#  def handle_event(event) do
-#    IO.puts "Event :#{inspect(event)}"
-  #  end
-
-  def handle_events(events, _from, state) do
-    for event <- events do
-      handle_event(event)
-    end
-    {:noreply, [], state}
   end
 end
