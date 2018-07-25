@@ -18,7 +18,7 @@ defmodule NknClient.MixProject do
     [
       name: "nkn_client",
       licenses: ["MIT"],
-      files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
+      files: ["lib", "mix.exs", "README*", "LICENSE*"],
       links: %{"GitHub" => "https://github.com/termoose/nkn_client",
                "NKN" => "https://nkn.org/"}
     ]
@@ -39,7 +39,8 @@ defmodule NknClient.MixProject do
       {:poison, "~> 3.1"},
       {:hackney, "~> 1.7"},
       {:websockex, "~> 0.4.0"},
-      {:gen_stage, "~> 0.14"}
+      {:gen_stage, "~> 0.14"},
+      {:ex_doc, "~> 0.18", only: :dev}
     ]
   end
 end
