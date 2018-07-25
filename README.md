@@ -1,6 +1,7 @@
 # NknClient
 
 An Elixir client for sending and receiving messages on [NKN](https://nkn.org).
+Client defaults to compressed elliptic curve points on `NIST P-256`.
 
 A simple usage example
 
@@ -33,3 +34,11 @@ def deps do
 end
 ```
 
+## TODO
+
+- Support client id's in front of the public keys
+- Let users specify their own private key
+- Make handle functions for each of the different message types
+- Write more tests!
+- Declare type specifications on all functions
+- Investigate how we can achieve better throughput with our GenStage
