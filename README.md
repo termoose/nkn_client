@@ -1,11 +1,29 @@
 # NknClient
 
-**TODO: Add description**
+An Elixir client for sending and receiving messages on [NKN](https://nkn.org).
+
+A simple usage example
+
+```elixir
+defmodule User do
+  use NknClient
+
+  def start_link(state) do
+    NknClient.start_link(__MODULE__, state)
+  end
+
+  def handle_event(event) do
+    Logger.debug("Event: #{inspect(event)}")
+  end
+end
+
+iex> User.send_packet("some_address", "Hello, NKN!")
+
+```
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `nkn_client` to your list of dependencies in `mix.exs`:
+Add `nkn_client` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -14,8 +32,4 @@ def deps do
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/nkn_client](https://hexdocs.pm/nkn_client).
 
