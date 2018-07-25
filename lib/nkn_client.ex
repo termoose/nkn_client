@@ -15,6 +15,10 @@ defmodule NknClient do
         {:consumer, state, subscribe_to: [NknClient.WS.MessageSink]}
       end
 
+      def send_packet(dest, payload) do
+        NknClient.WS.send(dest, payload)
+      end
+
       def handle_event(event) do
         Logger.warn("No implementation for event: #{inspect(event)}")
       end
