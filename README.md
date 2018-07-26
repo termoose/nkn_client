@@ -19,7 +19,7 @@ defmodule User do
 end
 ```
 
-The module `User` can then but put in supervision tree or started manually
+The module `User` can then be put in a supervision tree or started manually
 
 ```elixir
 {:ok, pid} = User.start_link(:ok)
@@ -46,8 +46,8 @@ end
 
 ## TODO
 
-- Support client id's in front of the public keys
-- Let users specify their own private key
+- Support client id's in front of the public keys (`id.pub_key`)
+- Let users specify their own private key and calculate corresponding public key
 - Make handle functions for each of the different message types
 - Write more tests!
 - Declare type specifications on all functions
