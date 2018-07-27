@@ -42,7 +42,7 @@ iex> User.send_packet("some_address", "Hello, NKN!")
 
 Any of the fields can be left blank. If `client_id` is not specified then only the public key will be used for identification. If the `private_key` is left blank then a new one will be generated every time your application starts.
 
-Do not place your private key in your repository, set it as an environemnt variable and access it with `System.get_env("SECRET_NKN_PRIVATE_KEY")`.
+Do not place your private key in your repository, set it as an environment variable and access it with `System.get_env("SECRET_NKN_PRIVATE_KEY")`.
 
 ```elixir
 config :nkn_client, client_id: "elixir_nkn",
