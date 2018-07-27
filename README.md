@@ -23,7 +23,7 @@ Callback that can be implemented:
 
 - `handle_packet/1`
 - `handle_update_chain/1`
-- `handle_set_client`
+- `handle_set_client/1`
 
 The module `User` can then be put in a supervision tree or started manually
 
@@ -40,7 +40,7 @@ iex> User.send_packet("some_address", "Hello, NKN!")
 
 ## Config
 
-Any of the fields can be left blank. If `client_id` is not specified then only the public key be used for identification. If the `private_key` is left blank then one will be generated every time your application starts.
+Any of the fields can be left blank. If `client_id` is not specified then only the public key will be used for identification. If the `private_key` is left blank then a new one will be generated every time your application starts.
 
 Do not place your private key in your repository, set it as an environemnt variable and access it with `System.get_env("SECRET_NKN_PRIVATE_KEY")`.
 
