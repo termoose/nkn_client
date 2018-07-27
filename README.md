@@ -66,6 +66,8 @@ end
 - ~~Support client id's in front of the public keys (`id.pub_key`)~~
 - ~~Let users specify their own private key and calculate corresponding public key~~
 - ~~Make handle functions for each of the different message types~~
+- Can the "Digest" in packages be decoded to reveal information about the relay?
+- Store the data from updateSigChainBlockHash and expose it through the library API
 - Write more tests!
 - Declare type specifications on all functions
 - Investigate how we can achieve better throughput with our GenStage
