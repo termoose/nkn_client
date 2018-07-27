@@ -27,11 +27,11 @@ defmodule NknClient.Crypto.Keys do
 
   def handle_call(:get_public, _from, keys) do
     pub_key = keys.public_key |> compress |> encode
-    client_id = Application.get_env(:nkn_client, :client_id)
 
-    {:reply,
-     "#{client_id}.#{pub_key}",
-     keys}
+    case Application.get_env(:nkn_client, :client_id) do
+      nil -> {:reply, pub_key, keys}
+      client_id -> {:reply, "#{client_id}.#{pub_key}", keys}
+    end
   end
 
   def get_pub(private_key) do
