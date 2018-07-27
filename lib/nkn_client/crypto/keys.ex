@@ -22,15 +22,23 @@ defmodule NknClient.Crypto.Keys do
 
   # Private key set by user TODO
   def init(%KeyData{} = key_data) do
-    {:ok, key_data}
+    {:ok, get_pub(key_data.private_key)}
   end
 
   def handle_call(:get_public, _from, keys) do
+    pub_key = keys.public_key |> compress |> encode
+    client_id = Application.get_env(:nkn_client, :client_id)
+
     {:reply,
-     keys.public_key
-     |> compress
-     |> encode,
+     "#{client_id}.#{pub_key}",
      keys}
+  end
+
+  def get_pub(private_key) do
+    {pub, priv} = :crypto.generate_key(:ecdh, :secp256r1, private_key |> decode)
+
+    %KeyData{private_key: priv,
+             public_key: pub}
   end
 
   def get_priv_pub do
@@ -53,5 +61,9 @@ defmodule NknClient.Crypto.Keys do
 
   defp encode(key) do
     Base.encode16(key, case: :lower)
+  end
+
+  defp decode(key) do
+    Base.decode16!(key |> String.upcase)
   end
 end
