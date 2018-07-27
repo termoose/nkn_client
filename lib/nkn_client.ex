@@ -4,7 +4,9 @@ defmodule NknClient do
   """
   use GenStage
 
-  @callback handle_event(event :: any) :: any
+  @callback handle_packet(event :: any) :: any
+  @callback handle_update_chain(event :: any) :: any
+  @callback handle_set_client(event :: any) :: any
 
   defmacro __using__(opts) do
     quote do
@@ -19,13 +21,34 @@ defmodule NknClient do
         NknClient.WS.send(dest, payload)
       end
 
-      def handle_event(event) do
-        Logger.warn("No implementation for event: #{inspect(event)}")
+      # Default implementations
+      def handle_packet(_event) do
+        Logger.debug("No implementation of #{pretty_func(__ENV__.function)}")
+      end
+
+      def handle_update_chain(_event) do
+        Logger.debug("No implementation of #{pretty_func(__ENV__.function)}")
+      end
+
+      def handle_set_client(_event) do
+        Logger.debug("No implementation of #{pretty_func(__ENV__.function)}")
+      end
+
+      # FIXME: more actions need to be added here as they are discovered
+      def handle_event({module, %{"Action" => action} = event}) do
+        case action do
+          "setClient" ->
+            module.handle_set_client(event)
+          "updateSigChainBlockHash" ->
+            module.handle_update_chain(event)
+          "receivePacket" ->
+            module.handle_packet(event)
+        end
       end
 
       def handle_events(events, _from, {module, state}) do
         for {:text, event} <- events do
-          module.handle_event(event |> Poison.decode!)
+          handle_event({module, event |> Poison.decode!})
         end
         {:noreply, [], {module, state}}
       end
@@ -38,10 +61,15 @@ defmodule NknClient do
         |> Supervisor.child_spec(unquote(Macro.escape(opts)))
       end
 
-      defoverridable [handle_event: 1]
+      defp pretty_func({func, arity}) do
+        "#{Atom.to_string(func)}/#{arity}"
+      end
+
+      defoverridable [handle_packet: 1, handle_update_chain: 1,
+                      handle_set_client: 1]
     end
   end
-  
+
   def start_link(module, state) do
     GenStage.start_link(module, {module, state}, name: module)
   end
