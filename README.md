@@ -56,7 +56,7 @@ Add `nkn_client` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:nkn_client, "~> 0.1.0"}
+    {:nkn_client, "~> 0.2.0"}
   ]
 end
 ```
