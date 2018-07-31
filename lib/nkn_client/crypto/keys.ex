@@ -15,33 +15,45 @@ defmodule NknClient.Crypto.Keys do
     GenServer.call(__MODULE__, :get_public)
   end
 
-  # Generate private key
-  def init(%KeyData{private_key: nil}) do
-    {:ok, get_priv_pub()}
+  def get_keys do
+    GenServer.call(__MODULE__, :get_keys)
   end
 
-  # Private key set by user TODO
+  # Generate private key
+  def init(%KeyData{private_key: nil}) do
+    {:ok, generate_priv_pub()}
+  end
+
+  # Private key set by user
   def init(%KeyData{} = key_data) do
-    {:ok, get_pub(key_data.private_key)}
+    {:ok, generate_pub(key_data.private_key)}
+  end
+
+  def handle_call(:get_keys, _from, keys) do
+    {:reply,
+     %KeyData{public_key: get_pub(keys),
+              private_key: keys.private_key |> encode},
+     keys}
   end
 
   def handle_call(:get_public, _from, keys) do
-    pub_key = keys.public_key |> compress |> encode
-
-    case Application.get_env(:nkn_client, :client_id) do
-      nil -> {:reply, pub_key, keys}
-      client_id -> {:reply, "#{client_id}.#{pub_key}", keys}
-    end
+    {:reply, get_pub(keys), keys}
   end
 
-  def get_pub(private_key) do
+  def get_pub(keys) do
+    pub_key = keys.public_key |> compress |> encode
+
+
+  end
+
+  def generate_pub(private_key) do
     {pub, priv} = :crypto.generate_key(:ecdh, :secp256r1, private_key |> decode)
 
     %KeyData{private_key: priv,
              public_key: pub}
   end
 
-  def get_priv_pub do
+  def generate_priv_pub do
     {pub, priv} = :crypto.generate_key(:ecdh, :secp256r1)
 
     %KeyData{private_key: priv,

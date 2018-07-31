@@ -7,6 +7,7 @@ defmodule NknClient do
   @callback handle_packet(event :: any) :: any
   @callback handle_update_chain(event :: any) :: any
   @callback handle_set_client(event :: any) :: any
+  @callback handle_send_packet(event :: any) :: any
 
   defmacro __using__(opts) do
     quote do
@@ -19,6 +20,14 @@ defmodule NknClient do
 
       def send_packet(dest, payload) do
         NknClient.WS.send(dest, payload)
+      end
+
+      def get_keys do
+        NknClient.Crypto.keys()
+      end
+
+      def get_address do
+        NknClient.Crypto.address()
       end
 
       # Default implementations
@@ -34,6 +43,10 @@ defmodule NknClient do
         Logger.debug("No implementation of #{pretty_func(__ENV__.function)}")
       end
 
+      def handle_send_packet(_event) do
+        Logger.debug("No implementation of #{pretty_func(__ENV__.function)}")
+      end
+
       # FIXME: more actions need to be added here as they are discovered
       def handle_event({module, %{"Action" => action} = event}) do
         case action do
@@ -43,6 +56,8 @@ defmodule NknClient do
             module.handle_update_chain(event)
           "receivePacket" ->
             module.handle_packet(event)
+          "sendPacket" ->
+            module.handle_send_packet(event)
         end
       end
 
@@ -66,7 +81,7 @@ defmodule NknClient do
       end
 
       defoverridable [handle_packet: 1, handle_update_chain: 1,
-                      handle_set_client: 1]
+                      handle_set_client: 1, handle_send_packet: 1]
     end
   end
 
