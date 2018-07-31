@@ -24,6 +24,7 @@ Callback that can be implemented:
 - `handle_packet/1`
 - `handle_update_chain/1`
 - `handle_set_client/1`
+- `handle_send_packet/1`
 
 The module `User` can then be put in a supervision tree or started manually
 
@@ -35,7 +36,13 @@ Send packets to other users on the network
 
 ```elixir
 iex> User.send_packet("some_address", "Hello, NKN!")
+```
 
+Get your own key pair and client id
+
+```elixir
+iex> User.get_keys()
+iex> User.get_address()
 ```
 
 ## Config
@@ -67,6 +74,7 @@ end
 - ~~Let users specify their own private key and calculate corresponding public key~~
 - ~~Make handle functions for each of the different message types~~
 - Can the "Digest" in packages be decoded to reveal information about the relay?
+- Add a non-empty `Signature` to sent messages
 - Store the data from updateSigChainBlockHash and expose it through the library API
 - Write more tests!
 - Declare type specifications on all functions
