@@ -47,13 +47,14 @@ iex> User.get_address()
 
 ## Config
 
-Any of the fields can be left blank. If `client_id` is not specified then only the public key will be used for identification. If the `private_key` is left blank then a new one will be generated every time your application starts.
+Any of the fields can be left blank. If `client_id` is not specified then only the public key will be used for identification. If the `private_key` is left blank then a new one will be generated every time your application starts. If `rpc_url` is left blank the current public default one `http://node00001.nkn.org:30003` will be used.
 
 Do not place your private key in your repository, set it as an environment variable and access it with `System.get_env("SECRET_NKN_PRIVATE_KEY")`.
 
 ```elixir
 config :nkn_client, client_id: "elixir_nkn",
-                    private_key: "some_private_key"
+                    private_key: "some_private_key",
+                    rpc_url: "http://custom_seed_rpc:30003"
 ```
 
 ## Installation
@@ -63,7 +64,7 @@ Add `nkn_client` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:nkn_client, "~> 0.3.0"}
+    {:nkn_client, "~> 0.4.0"}
   ]
 end
 ```
