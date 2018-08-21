@@ -1,12 +1,18 @@
 defmodule NknClient.RPC.Client do
   alias JSONRPC2.Clients.HTTP
 
-  @url "http://cluster2-oregon.nkn.org:30003"
+  @default_url "http://cluster2-oregon.nkn.org:30003"
 
   def get_ws_address() do
-    {:ok, host} = HTTP.call(@url, "getwsaddr",
-                            %{"address" => "#{NknClient.Crypto.address()}"})
+    case Application.get_env(:nkn_client, :rpc_url) do
+      nil -> get_host(@default_url)
+      url -> get_host(url)
+    end
+  end
 
-    host
+  defp get_host(url) do
+        {:ok, host} = HTTP.call(url, "getwsaddr",
+                                %{"address" => "#{NknClient.Crypto.address()}"})
+        host
   end
 end
