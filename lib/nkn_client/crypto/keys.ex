@@ -42,8 +42,6 @@ defmodule NknClient.Crypto.Keys do
 
   def get_pub(keys) do
     pub_key = keys.public_key |> compress |> encode
-
-
   end
 
   def generate_pub(private_key) do
