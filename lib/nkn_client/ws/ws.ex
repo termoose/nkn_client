@@ -17,12 +17,8 @@ defmodule NknClient.WS do
   end
 
   def send(dest, payload) do
-    %{"Action" => "sendPacket",
-      "Dest" => dest,
-      "Payload" => payload,
-      "Signature" => ""}
-    |> Poison.encode!
-    |> send_txt
+    NknClient.Proto.text(dest, payload)
+    |> send_bin
   end
 
   defp send_bin(bin) do
