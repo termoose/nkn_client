@@ -22,10 +22,10 @@ defmodule NknClient.WS do
   end
 
   defp send_bin(bin) do
-    Client.send({:binary, bin})
+    Client.send_frame({:binary, bin})
   end
 
   defp send_txt(msg) do
-    Client.send({:text, msg})
+    Client.send_frame({:text, msg})
   end
 end

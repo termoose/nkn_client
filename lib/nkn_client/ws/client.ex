@@ -6,13 +6,15 @@ defmodule NknClient.WS.Client do
     WebSockex.start_link(url, __MODULE__, url, name: __MODULE__)
   end
 
-  def send(msg) do
+  def send_frame(msg) do
     Logger.debug("Sending: #{inspect(msg)}")
     WebSockex.send_frame(__MODULE__, msg)
   end
 
   def handle_frame(msg, state) do
     {:text, frame} = msg
+
+    Logger.debug("Frame: #{inspect(frame)}")
 
     # If this pattern match fails we crash the entire
     # WS supervisior tree and reconnects
@@ -22,6 +24,11 @@ defmodule NknClient.WS.Client do
     # message sink's queue
     NknClient.WS.MessageSink.handle(msg)
     {:ok, state}
+  end
+
+  def terminate(reason, state) do
+    Logger.error("WS.Client terminate: #{inspect(reason)}")
+    exit(:normal)
   end
 
   def handle_connect(_conn, state) do

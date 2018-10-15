@@ -15,6 +15,12 @@ defmodule NknClient.Proto.Payloads do
     |> Payload.encode
   end
 
+  def gen_pid do
+    
+  end
+
+  def random_bytes(length), do: 1..length |> Enum.map(fn _ -> Enum.random(0..255) end)
   defp create_payload(data), do: Payload.new(type: :TEXT, data: data)
+  defp unixtime, do: System.system_time(:second)
 end
 
