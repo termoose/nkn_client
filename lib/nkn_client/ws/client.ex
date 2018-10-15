@@ -12,6 +12,14 @@ defmodule NknClient.WS.Client do
   end
 
   def handle_frame(msg, state) do
+    {:text, frame} = msg
+
+    # If this pattern match fails we crash the entire
+    # WS supervisior tree and reconnects
+    %{"Error" => 0} = frame |> Poison.decode!
+
+    # If we get this far we send this message to our
+    # message sink's queue
     NknClient.WS.MessageSink.handle(msg)
     {:ok, state}
   end

@@ -15,7 +15,8 @@ defmodule NknClient do
       @behaviour NknClient
 
       def init(state) do
-        {:consumer, state, subscribe_to: [NknClient.WS.MessageSink]}
+        {:consumer, state, subscribe_to: [{NknClient.WS.MessageSink,
+                                           cancel: :temporary}]}
       end
 
       def send_packet(dest, payload) do
@@ -90,6 +91,7 @@ defmodule NknClient do
   end
 
   def init(state) do
-    {:consumer, state, subscribe_to: [NknClient.WS.MessageSink]}
+    {:consumer, state, subscribe_to: [{NknClient.WS.MessageSink,
+                                       cancel: :temporary}]}
   end
 end

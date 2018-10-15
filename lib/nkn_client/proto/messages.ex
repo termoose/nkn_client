@@ -4,13 +4,13 @@ defmodule NknClient.Proto.Messages do
 
   @holding_secs 5
 
-  def outbound(payload, dests) when is_list(dests) do
-    OutboundMessage.new(dests: dests, payload: payload,
-                        max_holding_seconds: @holding_secs)
-    |> OutboundMessage.encode
-  end
+#  def outbound(payload, dests) when is_list(dests) do
+#    OutboundMessage.new(dests: dests, payload: payload,
+#                        max_holding_seconds: @holding_secs)
+#    |> OutboundMessage.encode
+#  end
 
-  def outbound(payload, dest) when not is_list(dest) do
+  def outbound(payload, dest) do
     OutboundMessage.new(dest: dest, payload: payload,
                         max_holding_seconds: @holding_secs)
     |> OutboundMessage.encode

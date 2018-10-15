@@ -7,7 +7,7 @@ defmodule NknClient.Proto do
     |> Messages.outbound(dest)
   end
 
-  def text(dest, data) do
+  def binary(dest, data) do
     Payloads.binary(data)
     |> Messages.outbound(dest)
   end
