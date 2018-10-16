@@ -11,16 +11,18 @@ defmodule NknClient.WS.Client do
     WebSockex.send_frame(__MODULE__, msg)
   end
 
+  # All messages from NKN nodes are :binary
   def handle_frame({:binary, frame} = msg, state) do
-    Logger.debug("Received binary: #{inspect(frame)}")
-    inbound = NknClient.Proto.Messages.inbound(frame)
-    Logger.debug("Decoded: #{inspect(inbound)}")
+    frame
+    |> NknClient.Proto.Messages.inbound
+    |> NknClient.WS.MessageSink.handle
+
     {:ok, state}
   end
 
+  # We only receive :text type from the NKN server node,
+  # none of the payloads from other nodes are :text
   def handle_frame({:text, frame} = msg, state) do
-    Logger.debug("Frame: #{inspect(frame)}")
-
     # If this pattern match fails we crash the entire
     # WS supervisior tree and reconnects
     %{"Error" => 0} = frame |> Poison.decode!
@@ -28,6 +30,7 @@ defmodule NknClient.WS.Client do
     # If we get this far we send this message to our
     # message sink's queue
     NknClient.WS.MessageSink.handle(msg)
+
     {:ok, state}
   end
 

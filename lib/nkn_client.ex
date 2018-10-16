@@ -49,23 +49,33 @@ defmodule NknClient do
       end
 
       # FIXME: more actions need to be added here as they are discovered
-      def handle_event({module, %{"Action" => action} = event}) do
+      def handle_text_event({module, %{"Action" => action} = event}) do
         case action do
           "setClient" ->
             module.handle_set_client(event)
           "updateSigChainBlockHash" ->
             module.handle_update_chain(event)
-          "receivePacket" ->
-            module.handle_packet(event)
           "sendPacket" ->
             module.handle_send_packet(event)
+          "receivePacket" ->
+            module.handle_packet(event)
         end
       end
 
+      # Binary events are every protobuffer message received
+      def handle_binary_event({module, event}) do
+        module.handle_packet(event)
+      end
+
       def handle_events(events, _from, {module, state}) do
-        for {:text, event} <- events do
-          handle_event({module, event |> Poison.decode!})
-        end
+        Enum.map(events, fn
+          {:text, event} ->
+            handle_text_event({module, event |> Poison.decode!})
+
+          event ->
+            handle_binary_event({module, event})
+        end)
+
         {:noreply, [], {module, state}}
       end
 
