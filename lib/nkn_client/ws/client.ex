@@ -11,9 +11,12 @@ defmodule NknClient.WS.Client do
     WebSockex.send_frame(__MODULE__, msg)
   end
 
-  def handle_frame(msg, state) do
-    {:text, frame} = msg
+  def handle_frame({:binary, frame} = msg, state) do
+    Logger.debug("Received binary: #{inspect(frame)}")
+    {:ok, state}
+  end
 
+  def handle_frame({:text, frame} = msg, state) do
     Logger.debug("Frame: #{inspect(frame)}")
 
     # If this pattern match fails we crash the entire
@@ -31,8 +34,8 @@ defmodule NknClient.WS.Client do
     exit(:normal)
   end
 
-  def handle_connect(_conn, state) do
-    Logger.info("Connected to #{state}")
+  def handle_connect(conn, state) do
+    Logger.info("Connected to #{state}: #{inspect(conn.host)}")
     {:ok, state}
   end
 

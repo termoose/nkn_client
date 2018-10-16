@@ -2,7 +2,7 @@ defmodule NknClient.Proto.Messages do
   use Protobuf, from: Path.expand("messages.proto", __DIR__)
   alias NknClient.Proto.Messages.OutboundMessage
 
-  @holding_secs 5
+  @holding_secs 3600
 
 #  def outbound(payload, dests) when is_list(dests) do
 #    OutboundMessage.new(dests: dests, payload: payload,
