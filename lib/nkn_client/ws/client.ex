@@ -13,6 +13,8 @@ defmodule NknClient.WS.Client do
 
   def handle_frame({:binary, frame} = msg, state) do
     Logger.debug("Received binary: #{inspect(frame)}")
+    inbound = NknClient.Proto.Messages.inbound(frame)
+    Logger.debug("Decoded: #{inspect(inbound)}")
     {:ok, state}
   end
 
