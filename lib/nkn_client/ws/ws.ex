@@ -16,8 +16,13 @@ defmodule NknClient.WS do
     {:ok, state}
   end
 
-  def send(dest, payload) do
+  def send_text(dest, payload) do
     NknClient.Proto.text(dest, payload)
+    |> send_bin
+  end
+
+  def send_bin(dest, payload) do
+    NknClient.Proto.binary(dest, payload)
     |> send_bin
   end
 

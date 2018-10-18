@@ -19,8 +19,12 @@ defmodule NknClient do
                                            cancel: :temporary}]}
       end
 
-      def send_packet(dest, payload) do
-        NknClient.WS.send(dest, payload)
+      def send_text(dest, payload) do
+        NknClient.WS.send_text(dest, payload)
+      end
+
+      def send_bin(dest, payload) do
+        NknClient.WS.send_bin(dest, payload)
       end
 
       def get_keys do
