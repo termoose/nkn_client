@@ -1,7 +1,7 @@
 # NknClient
 
 An Elixir client for sending and receiving messages on [NKN](https://nkn.org).
-Client defaults to compressed elliptic curve points on `NIST P-256`.
+Client defaults to compressed elliptic curve points on `NIST P-256`. Support for `ed25519` will be [added in the future](https://github.com/nknorg/nkn/issues/74) once the offical nodes support it.
 
 A simple usage example
 
@@ -25,6 +25,7 @@ Callback that can be implemented:
 - `handle_update_chain/1`
 - `handle_set_client/1`
 - `handle_send_packet/1`
+- `handle_raw_block/1`
 
 The module `User` can then be put in a supervision tree or started manually
 
@@ -36,6 +37,7 @@ Send packets to other users on the network
 
 ```elixir
 iex> User.send_packet("some_address", "Hello, NKN!")
+iex> User.send_packet(["some_address", "another_address"], "Hello, NKN!")
 ```
 
 Get your own key pair and client id

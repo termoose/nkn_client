@@ -8,6 +8,7 @@ defmodule NknClient do
   @callback handle_update_chain(event :: any) :: any
   @callback handle_set_client(event :: any) :: any
   @callback handle_send_packet(event :: any) :: any
+  @callback handle_raw_block(event :: any) :: any
 
   defmacro __using__(opts) do
     quote do
@@ -37,22 +38,26 @@ defmodule NknClient do
 
       # Default implementations
       def handle_packet(_event) do
-        Logger.debug("No implementation of #{pretty_func(__ENV__.function)}")
+        log_default_msg(__ENV__.function)
       end
 
       def handle_update_chain(_event) do
-        Logger.debug("No implementation of #{pretty_func(__ENV__.function)}")
+        log_default_msg(__ENV__.function)
       end
 
       def handle_set_client(_event) do
-        Logger.debug("No implementation of #{pretty_func(__ENV__.function)}")
+        log_default_msg(__ENV__.function)
       end
 
       def handle_send_packet(_event) do
-        Logger.debug("No implementation of #{pretty_func(__ENV__.function)}")
+        log_default_msg(__ENV__.function)
       end
 
-      # FIXME: more actions need to be added here as they are discovered
+      def handle_raw_block(_event) do
+        log_default_msg(__ENV__.function)
+      end
+
+      # All actions from the official client needs callbacks here
       def handle_text_event({module, %{"Action" => action} = event}) do
         case action do
           "setClient" ->
@@ -63,6 +68,8 @@ defmodule NknClient do
             module.handle_send_packet(event)
           "receivePacket" ->
             module.handle_packet(event)
+          "sendRawBlock" ->
+            module.handle_raw_block(event)
         end
       end
 
@@ -95,8 +102,13 @@ defmodule NknClient do
         "#{Atom.to_string(func)}/#{arity}"
       end
 
+      defp log_default_msg(func) do
+        Logger.debug("No implementation of #{pretty_func(func)}")
+      end
+
       defoverridable [handle_packet: 1, handle_update_chain: 1,
-                      handle_set_client: 1, handle_send_packet: 1]
+                      handle_set_client: 1, handle_send_packet: 1,
+                      handle_raw_block: 1]
     end
   end
 
