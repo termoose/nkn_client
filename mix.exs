@@ -17,6 +17,7 @@ defmodule NknClient.MixProject do
   defp package do
     [
       name: "nkn_client",
+      maintainers: ["Ole Andre Birkedal"],
       licenses: ["MIT"],
       files: ["lib", "mix.exs", "README*", "LICENSE*"],
       links: %{"GitHub" => "https://github.com/termoose/nkn_client",
