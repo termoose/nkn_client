@@ -49,7 +49,7 @@ iex> User.get_address()
 
 ## Config
 
-Any of the fields can be left blank. If `client_id` is not specified then only the public key will be used for identification. If the `private_key` is left blank then a new one will be generated every time your application starts. If `rpc_url` is left blank the current public default one `http://node00001.nkn.org:30003` will be used.
+Any of the fields can be left blank. If `client_id` is not specified then only the public key will be used for identification. If the `private_key` is left blank then a new one will be generated every time your application starts. If `rpc_url` is left blank the current public default one `http://testnet-node-0001.nkn.org:30003` will be used.
 
 Do not place your private key in your repository, set it as an environment variable and access it with `System.get_env("SECRET_NKN_PRIVATE_KEY")`.
 
@@ -76,9 +76,9 @@ end
 - ~~Support client id's in front of the public keys (`id.pub_key`)~~
 - ~~Let users specify their own private key and calculate corresponding public key~~
 - ~~Make handle functions for each of the different message types~~
-- Can the "Digest" in packages be decoded to reveal information about the relay?
+- ~~Can the "Digest" in packages be decoded to reveal information about the relay?~~
 - Add a non-empty `Signature` to sent messages
-- Store the data from updateSigChainBlockHash and expose it through the library API
+- ~~Store the data from updateSigChainBlockHash and expose it through the library API~~ (Callback added)
 - Write more tests!
 - Declare type specifications on all functions
 - Investigate how we can achieve better throughput with our GenStage
