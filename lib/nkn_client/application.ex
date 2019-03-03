@@ -12,7 +12,7 @@ defmodule NknClient.Application do
     children = [
       supervisor(NknClient.Crypto.Supervisor, []),
       supervisor(NknClient.WS.Supervisor, []),
-      # {User, []}
+      {User, []}
       # Starts a worker by calling: NknClient.Worker.start_link(arg)
       # {NknClient.Worker, arg},
     ]

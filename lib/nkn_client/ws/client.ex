@@ -23,15 +23,30 @@ defmodule NknClient.WS.Client do
   # We only receive :text type from the NKN server node,
   # none of the payloads from other nodes are :text
   def handle_frame({:text, frame} = msg, state) do
-    # If this pattern match fails we crash the entire
-    # WS supervisior tree and reconnects
-    %{"Error" => 0} = frame |> Poison.decode!
+    Logger.debug("Raw: #{inspect(frame)}")
 
-    # If we get this far we send this message to our
-    # message sink's queue
-    NknClient.WS.MessageSink.handle(msg)
+    # If this JSON parsing fails we crash the entire
+    # WS supervisior tree and reconnects
+    json_frame = frame |> Poison.decode!
+
+    case json_frame do
+      %{"Error" => 48001} ->
+        handle_wrong_node(json_frame)
+
+      _ ->
+        NknClient.WS.MessageSink.handle(msg)
+
+    end
 
     {:ok, state}
+  end
+
+  def handle_wrong_node(json_frame) do
+    # ... signal getaddr function to return body next time
+    %{"Result" => body} = json_frame
+    Logger.debug("Body: #{inspect(body)}", body);
+
+    exit(:normal);
   end
 
   def terminate(reason, state) do
