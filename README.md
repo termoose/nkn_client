@@ -3,6 +3,8 @@
 An Elixir client for sending and receiving messages on [NKN](https://nkn.org).
 Client defaults to compressed elliptic curve points on `NIST P-256`. Support for `ed25519` will be [added in the future](https://github.com/nknorg/nkn/issues/74) once the offical nodes support it.
 
+Automatically reconnects to the correct node from body of the `WrongNode` messages in accordance with the reference JavaScript Client.
+
 A simple usage example
 
 ```elixir
@@ -66,7 +68,7 @@ Add `nkn_client` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:nkn_client, "~> 0.4.0"}
+    {:nkn_client, "~> 0.5.0"}
   ]
 end
 ```
