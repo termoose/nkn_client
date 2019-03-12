@@ -7,12 +7,11 @@ defmodule NknClient.WS.Client do
   end
 
   def send_frame(msg) do
-    Logger.debug("Sending: #{inspect(msg)}")
     WebSockex.send_frame(__MODULE__, msg)
   end
 
   # All messages from NKN nodes are :binary
-  def handle_frame({:binary, frame} = msg, state) do
+  def handle_frame({:binary, frame}, state) do
     frame
     |> NknClient.Proto.Messages.inbound
     |> NknClient.WS.MessageSink.handle
@@ -23,10 +22,8 @@ defmodule NknClient.WS.Client do
   # We only receive :text type from the NKN server node,
   # none of the payloads from other nodes are :text
   def handle_frame({:text, frame} = msg, state) do
-    Logger.debug("Raw: #{inspect(frame)}")
-
     # If this JSON parsing fails we crash the entire
-    # WS supervisior tree and reconnects
+    # WS supervisior tree and reconnect
     json_frame = frame |> Poison.decode!
 
     case json_frame do
@@ -42,14 +39,21 @@ defmodule NknClient.WS.Client do
   end
 
   def handle_wrong_node(json_frame) do
-    # ... signal getaddr function to return body next time
+    # This will crash the supervisor if there is no "Result",
+    # which should never happen anyway
     %{"Result" => body} = json_frame
-    Logger.debug("Body: #{inspect(body)}", body);
 
+    Logger.error("Wrong node, changing to: #{inspect(body)}");
+
+    # Signal RPC to return new correct node next time
+    NknClient.RPC.set_address(body)
+
+    # This will tear down the entire WS supervisor
+    # since it's :one_for_all
     exit(:normal);
   end
 
-  def terminate(reason, state) do
+  def terminate(reason, _state) do
     Logger.error("WS.Client terminate: #{inspect(reason)}")
     exit(:normal)
   end

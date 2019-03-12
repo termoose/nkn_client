@@ -9,7 +9,7 @@ defmodule NknClient.WS.Supervisor do
 
   def init(:ok) do
     children = [
-      {WS.Client, "ws://#{RPC.Client.get_ws_address()}"},
+      {WS.Client, "ws://#{RPC.get_address()}"},
       {WS.MessageSink, []},
       {WS, :ok}
     ]
