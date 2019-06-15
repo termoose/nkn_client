@@ -21,52 +21,46 @@ defmodule NknClient.Crypto.Keys do
 
   # Generate private key
   def init(%KeyData{private_key: nil}) do
-    {:ok, generate_priv_pub()}
+    {:ok, generate_keys()}
   end
 
   # Private key set by user
   def init(%KeyData{} = key_data) do
-    {:ok, generate_pub(key_data.private_key)}
+    {:ok, generate_keys_from_seed(key_data.seed)}
   end
 
   def handle_call(:get_keys, _from, keys) do
     {:reply,
-     %KeyData{public_key: get_pub(keys),
-              private_key: keys.private_key |> encode},
+     %KeyData{public_key: encode(keys.public_key),
+              private_key: encode(keys.private_key),
+              seed: encode(keys.seed)},
      keys}
   end
 
   def handle_call(:get_public, _from, keys) do
-    {:reply, get_pub(keys), keys}
+    {:reply, encode(keys.public_key), keys}
   end
 
-  def get_pub(keys) do
-    pub_key = keys.public_key |> compress |> encode
-  end
-
-  def generate_pub(private_key) do
-    {pub, priv} = :crypto.generate_key(:ecdh, :secp256r1, private_key |> decode)
+  def generate_keys_from_seed(seed) do
+    %{public: pub, secret: priv} = :enacl.sign_seed_keypair(decode(seed))
 
     %KeyData{private_key: priv,
-             public_key: pub}
+             public_key: pub,
+             seed: seed}
   end
 
-  def generate_priv_pub do
-    {pub, priv} = :crypto.generate_key(:ecdh, :secp256r1)
+  def generate_keys do
+    %{public: pub, secret: priv} = :enacl.sign_keypair()
 
     %KeyData{private_key: priv,
-             public_key: pub}
+             public_key: pub,
+             seed: seed_from_private_key(priv)}
   end
 
-  defp compress(<< 04,
-                x :: binary-size(32),
-                y :: binary-size(32) >>) do
-    << _ :: binary-size(31), last >> = y
+  defp seed_from_private_key(private_key) do
+    << seed :: binary-size(32), _ :: binary >> = private_key
 
-    case Integer.is_even(last) do
-      true  -> << 02, x :: binary >>
-      false -> << 03, x :: binary >>
-    end
+    seed
   end
 
   defp encode(key) do
@@ -75,5 +69,9 @@ defmodule NknClient.Crypto.Keys do
 
   defp decode(key) do
     Base.decode16!(key |> String.upcase)
+  end
+
+  def convert_public_key(key) do
+    :enacl.crypto_sign_ed25519_public_to_curve25519(key)
   end
 end

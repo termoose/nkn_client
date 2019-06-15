@@ -2,7 +2,8 @@ defmodule NknClient.RPC.Client do
   use GenServer
   alias JSONRPC2.Clients.HTTP
 
-  @default_url "http://testnet-node-0001.nkn.org:30003"
+  #@default_url "http://testnet-node-0001.nkn.org:30003"
+  @default_url "http://devnet-seed-0001.nkn.org:30003"
 
   def start_link(:ok) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
