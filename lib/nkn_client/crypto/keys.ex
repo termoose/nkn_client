@@ -114,8 +114,4 @@ defmodule NknClient.Crypto.Keys do
   defp decode(key) do
     Base.decode16!(key |> String.upcase)
   end
-
-  def convert_public_key(key) do
-    :enacl.crypto_sign_ed25519_public_to_curve25519(key)
-  end
 end
