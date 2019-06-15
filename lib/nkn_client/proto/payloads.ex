@@ -1,5 +1,6 @@
 defmodule NknClient.Proto.Payloads do
   use Protobuf, from: Path.expand("payloads.proto", __DIR__)
+  alias NknClient.Proto.Payloads.Message
   alias NknClient.Proto.Payloads.Payload
   alias NknClient.Proto.Payloads.TextData
 
@@ -13,6 +14,11 @@ defmodule NknClient.Proto.Payloads do
     |> TextData.encode
     |> create_payload
     |> Payload.encode
+  end
+
+  def message(payload, encrypt, dest) do
+    Message.new(payload: payload)
+    |> Message.encode
   end
 
   def gen_pid do
