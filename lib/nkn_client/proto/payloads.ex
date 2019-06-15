@@ -16,13 +16,26 @@ defmodule NknClient.Proto.Payloads do
     |> Payload.encode
   end
 
-  def message(payload, encrypt, dest) do
+  def message(payload, false = _encrypt, dest) do
     Message.new(payload: payload)
     |> Message.encode
   end
 
-  def gen_pid do
-    
+  def message(payload, true = _encrypt, dest) do
+    Message.new(payload: payload)
+    |> Message.encode
+  end
+
+  def get_pubkey([id, pubkey]) do
+    pubkey
+  end
+
+  def get_pubkey([pubkey]) do
+    pubkey
+  end
+
+  def get_pubkey(pubkey) do
+    get_pubkey(String.split(pubkey, "."))
   end
 
   def random_bytes(length), do: 1..length |> Enum.map(fn _ -> Enum.random(0..255) end)

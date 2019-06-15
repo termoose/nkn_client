@@ -19,6 +19,14 @@ defmodule NknClient.Crypto.Keys do
     GenServer.call(__MODULE__, :get_keys)
   end
 
+  def encrypt(message, pub_key) do
+    GenServer.call(__MODULE__, {:encrypt, message, pub_key})
+  end
+
+  def decrypt(message, pub_key, nonce) do
+    GenServer.call(__MODULE__, {:decrypt, message, pub_key, nonce})
+  end
+
   # Generate private key
   def init(%KeyData{private_key: nil}) do
     {:ok, generate_keys()}
@@ -41,7 +49,39 @@ defmodule NknClient.Crypto.Keys do
     {:reply, encode(keys.public_key), keys}
   end
 
-  def generate_keys_from_seed(seed) do
+  def handle_call({:encrypt, message, pub_key}, _from, keys) do
+    {:reply, encrypt(message, pub_key, keys.seed), keys}
+  end
+
+  def handle_call({:decrypt, message, pub_key, nonce}, _from, keys) do
+    {:reply, decrypt(message, pub_key, nonce, keys.seed), keys}
+  end
+
+  # This shared secret should be cached in an ETS table
+  defp get_shared_key(other_pub_key, seed) do
+    other_curve_pub_key = other_pub_key
+    |> String.upcase
+    |> Base.decode16!
+    |> :enacl.crypto_sign_ed25519_public_to_curve25519
+
+    :enacl.box_beforenm(other_curve_pub_key, seed)
+  end
+
+  defp encrypt(message, dest_pub_key, seed) do
+    shared_secret = get_shared_key(dest_pub_key, seed)
+    nonce = random_nonce()
+
+    %{cipher_text: :enacl.box_afternm(message, nonce, shared_secret),
+      nonce: nonce}
+  end
+
+  defp decrypt(message, src_pub_key, nonce, seed) do
+    shared_secret = get_shared_key(src_pub_key, seed)
+
+    :enacl.box_open_afternm(message, nonce, shared_secret)
+  end
+
+  defp generate_keys_from_seed(seed) do
     %{public: pub, secret: priv} = :enacl.sign_seed_keypair(decode(seed))
 
     %KeyData{private_key: priv,
@@ -49,7 +89,7 @@ defmodule NknClient.Crypto.Keys do
              seed: seed}
   end
 
-  def generate_keys do
+  defp generate_keys do
     %{public: pub, secret: priv} = :enacl.sign_keypair()
 
     %KeyData{private_key: priv,
@@ -61,6 +101,10 @@ defmodule NknClient.Crypto.Keys do
     << seed :: binary-size(32), _ :: binary >> = private_key
 
     seed
+  end
+
+  defp random_nonce do
+    :enacl.randombytes(:enacl.box_nonce_size)
   end
 
   defp encode(key) do
