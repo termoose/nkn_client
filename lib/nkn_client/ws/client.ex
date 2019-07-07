@@ -3,7 +3,9 @@ defmodule NknClient.WS.Client do
   require Logger
 
   def start_link(url) do
-    WebSockex.start_link(url, __MODULE__, url, name: __MODULE__)
+		Logger.debug("Text: #{inspect(url)}")
+
+		WebSockex.start_link(url, __MODULE__, url, name: __MODULE__)
   end
 
   def send_frame(msg) do
@@ -13,6 +15,7 @@ defmodule NknClient.WS.Client do
   # All messages from NKN nodes are :binary
   def handle_frame({:binary, frame}, state) do
     frame
+		|> IO.inspect
     |> NknClient.Proto.Messages.inbound
     |> NknClient.WS.MessageSink.handle
 
@@ -22,7 +25,7 @@ defmodule NknClient.WS.Client do
   # We only receive :text type from the NKN server node,
   # none of the payloads from other nodes are :text
   def handle_frame({:text, frame} = msg, state) do
-    # If this JSON parsing fails we crash the entire
+		# If this JSON parsing fails we crash the entire
     # WS supervisior tree and reconnect
     json_frame = frame |> Poison.decode!
 

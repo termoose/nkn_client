@@ -13,11 +13,13 @@ defmodule NknClient.Proto.Payloads do
     TextData.new(text: data)
     |> TextData.encode
     |> create_payload
+		|> IO.inspect
     |> Payload.encode
   end
 
   def message(payload, false = _encrypt, dest) do
-    Message.new(payload: payload)
+    Message.new(payload: payload, encrypted: false)
+		|> IO.inspect
     |> Message.encode
   end
 
@@ -39,7 +41,7 @@ defmodule NknClient.Proto.Payloads do
   end
 
   def random_bytes(length), do: 1..length |> Enum.map(fn _ -> Enum.random(0..255) end)
-  defp create_payload(data), do: Payload.new(type: :TEXT, data: data)
+  defp create_payload(data), do: Payload.new(type: :TEXT, data: data, pid: random_bytes(8))
   defp unixtime, do: System.system_time(:second)
 end
 

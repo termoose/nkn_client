@@ -2,6 +2,7 @@ defmodule NknClient.Proto.Messages do
   use Protobuf, from: Path.expand("messages.proto", __DIR__)
   alias NknClient.Proto.Messages.OutboundMessage
   alias NknClient.Proto.Messages.InboundMessage
+	alias NknClient.Proto.Messages.ClientMessage
   alias NknClient.Proto.Payloads.Payload
   alias NknClient.Proto.Payloads.Message
   import Logger
@@ -21,8 +22,12 @@ defmodule NknClient.Proto.Messages do
   end
 
   def inbound(msg) do
-    decoded_msg = InboundMessage.decode(msg)
+		client_message = ClientMessage.decode(msg)
+		Logger.debug("Msg before decode: #{inspect(client_message)}")
+    decoded_msg = InboundMessage.decode(client_message.message)
+		IO.inspect(decoded_msg)
     message = Message.decode(decoded_msg.payload)
+		#	payload = Payload.decode(message.payload)
 
     #test_msg = NknClient.Proto.Payloads.Message.decode(decoded_msg)
     Logger.debug("Msg: #{inspect(message, limit: :infinity)}")
@@ -34,7 +39,8 @@ defmodule NknClient.Proto.Messages do
         %{"data" => NknClient.Crypto.Keys.decrypt(message.payload, pub_key, message.nonce),
           "from" => decoded_msg.src}
       false ->
-        %{"data" => message.payload,
+				payload = Payload.decode(message.payload)
+        %{"data" => decode_payload(payload),
           "from" => decoded_msg.src}
     end
 

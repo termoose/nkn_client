@@ -4,9 +4,9 @@ defmodule NknClient.Crypto.Keys do
   require Integer
   alias NknClient.Crypto.KeyData
 
-  def start_link(private_key) do
+  def start_link(seed) do
     GenServer.start_link(__MODULE__,
-                         %KeyData{private_key: private_key},
+                         %KeyData{seed: seed},
                          name: __MODULE__)
   end
 
@@ -28,13 +28,13 @@ defmodule NknClient.Crypto.Keys do
   end
 
   # Generate private key
-  def init(%KeyData{private_key: nil}) do
+  def init(%KeyData{seed: nil}) do
     {:ok, generate_keys()}
   end
 
-  # Private key set by user
+  # Seed set by user
   def init(%KeyData{} = key_data) do
-    {:ok, generate_keys_from_seed(key_data.seed)}
+    {:ok, generate_keys_from_seed(decode(key_data.seed))}
   end
 
   def handle_call(:get_keys, _from, keys) do
@@ -82,14 +82,14 @@ defmodule NknClient.Crypto.Keys do
   end
 
   defp generate_keys_from_seed(seed) do
-    %{public: pub, secret: priv} = :enacl.sign_seed_keypair(decode(seed))
+    %{public: pub, secret: priv} = :enacl.sign_seed_keypair(seed)
 
     %KeyData{private_key: priv,
              public_key: pub,
              seed: seed}
   end
 
-  defp generate_keys do
+  def generate_keys do
     %{public: pub, secret: priv} = :enacl.sign_keypair()
 
     %KeyData{private_key: priv,
@@ -107,11 +107,11 @@ defmodule NknClient.Crypto.Keys do
     :enacl.randombytes(:enacl.box_nonce_size)
   end
 
-  defp encode(key) do
+  def encode(key) do
     Base.encode16(key, case: :lower)
   end
 
-  defp decode(key) do
+  def decode(key) do
     Base.decode16!(key |> String.upcase)
   end
 end
