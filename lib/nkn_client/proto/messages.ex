@@ -50,7 +50,4 @@ defmodule NknClient.Proto.Messages do
   def decode_payload(%Payload{data: data} = payload) do
 		data
   end
-
-  # We don't decode anything but text
-  def decode_payload(%Payload{data: data} = payload), do: data
 end
