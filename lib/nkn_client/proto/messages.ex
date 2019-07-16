@@ -36,7 +36,11 @@ defmodule NknClient.Proto.Messages do
     case message.encrypted do
       true ->
         pub_key = NknClient.Proto.Payloads.get_pubkey(decoded_msg.src)
-        %{"data" => NknClient.Crypto.Keys.decrypt(message.payload, pub_key, message.nonce),
+				{:ok, decrypted} = NknClient.Crypto.Keys.decrypt(message.payload, pub_key, message.nonce)
+				Logger.debug("Decrypted: #{inspect(decrypted)}")
+				dec_payload = NknClient.Proto.Payloads.Payload.decode(decrypted)
+
+        %{"data" => dec_payload.data,
           "from" => decoded_msg.src}
       false ->
 				payload = Payload.decode(message.payload)

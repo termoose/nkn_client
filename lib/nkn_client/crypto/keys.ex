@@ -54,7 +54,7 @@ defmodule NknClient.Crypto.Keys do
   end
 
   def handle_call({:decrypt, message, pub_key, nonce}, _from, keys) do
-    {:reply, decrypt(message, pub_key, nonce, keys.seed), keys}
+    {:reply, decrypt(message, pub_key, nonce, keys.private_key), keys}
   end
 
   # This shared secret should be cached in an ETS table
@@ -66,6 +66,10 @@ defmodule NknClient.Crypto.Keys do
 
     :enacl.box_beforenm(other_curve_pub_key, seed)
   end
+
+	def convert_secret_key(secret_key) do
+		:enacl.crypto_sign_ed25519_secret_to_curve25519(secret_key)
+	end
 
   defp encrypt(message, dest_pub_key, seed) do
     shared_secret = get_shared_key(dest_pub_key, seed)
@@ -84,7 +88,7 @@ defmodule NknClient.Crypto.Keys do
   defp generate_keys_from_seed(seed) do
     %{public: pub, secret: priv} = :enacl.sign_seed_keypair(seed)
 
-    %KeyData{private_key: priv,
+    %KeyData{private_key: convert_secret_key(priv),
              public_key: pub,
              seed: seed}
   end
@@ -92,7 +96,7 @@ defmodule NknClient.Crypto.Keys do
   def generate_keys do
     %{public: pub, secret: priv} = :enacl.sign_keypair()
 
-    %KeyData{private_key: priv,
+    %KeyData{private_key: convert_secret_key(priv),
              public_key: pub,
              seed: seed_from_private_key(priv)}
   end
