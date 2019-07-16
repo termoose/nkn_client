@@ -81,8 +81,8 @@ defmodule NknClient.Crypto.Keys do
 
   defp decrypt(message, src_pub_key, nonce, seed) do
     shared_secret = get_shared_key(src_pub_key, seed)
-
-    :enacl.box_open_afternm(message, nonce, shared_secret)
+		{:ok, decrypted} = :enacl.box_open_afternm(message, nonce, shared_secret)
+		decrypted
   end
 
   defp generate_keys_from_seed(seed) do

@@ -22,36 +22,25 @@ defmodule NknClient.Proto.Messages do
   end
 
   def inbound(msg) do
+		# FIXME: make this into a |> pipeline
 		client_message = ClientMessage.decode(msg)
-		Logger.debug("Msg before decode: #{inspect(client_message)}")
     decoded_msg = InboundMessage.decode(client_message.message)
-		IO.inspect(decoded_msg)
     message = Message.decode(decoded_msg.payload)
-		#	payload = Payload.decode(message.payload)
 
-    #test_msg = NknClient.Proto.Payloads.Message.decode(decoded_msg)
-    Logger.debug("Msg: #{inspect(message, limit: :infinity)}")
-
-    # FIXME: figure out why we can't decrypt
     case message.encrypted do
       true ->
         pub_key = NknClient.Proto.Payloads.get_pubkey(decoded_msg.src)
-				{:ok, decrypted} = NknClient.Crypto.Keys.decrypt(message.payload, pub_key, message.nonce)
-				Logger.debug("Decrypted: #{inspect(decrypted)}")
+				decrypted = NknClient.Crypto.Keys.decrypt(message.payload, pub_key, message.nonce)
 				dec_payload = NknClient.Proto.Payloads.Payload.decode(decrypted)
 
-        %{"data" => dec_payload.data,
+        %{"data" => decode_payload(dec_payload),
           "from" => decoded_msg.src}
       false ->
 				payload = Payload.decode(message.payload)
+
         %{"data" => decode_payload(payload),
           "from" => decoded_msg.src}
     end
-
-#    %{"data" => message,
-#      "from" => decoded_msg.src}
-#    %{"data" => decode_payload(payload),
-#      "from" => decoded_msg.src}
   end
 
   def decode_payload(%Payload{type: :TEXT, data: data} = payload) do
@@ -59,11 +48,7 @@ defmodule NknClient.Proto.Messages do
   end
 
   def decode_payload(%Payload{data: data} = payload) do
-    msg = NknClient.Proto.Payloads.Message.decode(data)
-
-    %{payload: msg.payload,
-      encrypted: msg.encrypted,
-      nonce: msg.nonce}
+		data
   end
 
   # We don't decode anything but text
