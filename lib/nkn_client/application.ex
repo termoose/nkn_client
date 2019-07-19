@@ -12,8 +12,8 @@ defmodule NknClient.Application do
     children = [
       supervisor(NknClient.RPC.Supervisor, []),
       supervisor(NknClient.Crypto.Supervisor, []),
-      supervisor(NknClient.WS.Supervisor, [])
-      # {User, []}
+      supervisor(NknClient.WS.Supervisor, []),
+      {User, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

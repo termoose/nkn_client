@@ -3,8 +3,6 @@ defmodule NknClient.WS.Client do
   require Logger
 
   def start_link(url) do
-		Logger.debug("Text: #{inspect(url)}")
-
 		WebSockex.start_link(url, __MODULE__, url, name: __MODULE__)
   end
 
@@ -33,12 +31,28 @@ defmodule NknClient.WS.Client do
       %{"Error" => 48001} ->
         handle_wrong_node(json_frame)
 
+      %{"Action" => "updateSigChainBlockHash", "Error" => 0, "Result" => block_hash} ->
+        handle_new_sigchain_hash(block_hash)
+
+      %{"Action" => "setClient", "Error" => 0, "Result" => data} ->
+        handle_set_client(data)
+
       _ ->
         NknClient.WS.MessageSink.handle(msg)
 
     end
 
     {:ok, state}
+  end
+
+  def handle_set_client(data) do
+    %{"sigChainBlockHash" => block_hash} = data
+
+    handle_new_sigchain_hash(block_hash)
+  end
+
+  def handle_new_sigchain_hash(block_hash) do
+    Logger.debug("SigChain: #{inspect(block_hash)}")
   end
 
   def handle_wrong_node(json_frame) do

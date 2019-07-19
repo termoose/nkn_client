@@ -5,8 +5,6 @@ defmodule NknClient do
   use GenStage
 
   @callback handle_packet(event :: any) :: any
-  @callback handle_update_chain(event :: any) :: any
-  @callback handle_set_client(event :: any) :: any
   @callback handle_send_packet(event :: any) :: any
   @callback handle_raw_block(event :: any) :: any
 
@@ -41,14 +39,6 @@ defmodule NknClient do
         log_default_msg(__ENV__.function)
       end
 
-      def handle_update_chain(_event) do
-        log_default_msg(__ENV__.function)
-      end
-
-      def handle_set_client(_event) do
-        log_default_msg(__ENV__.function)
-      end
-
       def handle_send_packet(_event) do
         log_default_msg(__ENV__.function)
       end
@@ -60,10 +50,6 @@ defmodule NknClient do
       # All actions from the official client needs callbacks here
       def handle_text_event({module, %{"Action" => action} = event}) do
         case action do
-          "setClient" ->
-            module.handle_set_client(event)
-          "updateSigChainBlockHash" ->
-            module.handle_update_chain(event)
           "sendPacket" ->
             module.handle_send_packet(event)
           "receivePacket" ->
@@ -106,8 +92,7 @@ defmodule NknClient do
         Logger.debug("No implementation of #{pretty_func(func)}")
       end
 
-      defoverridable [handle_packet: 1, handle_update_chain: 1,
-                      handle_set_client: 1, handle_send_packet: 1,
+      defoverridable [handle_packet: 1, handle_send_packet: 1,
                       handle_raw_block: 1]
     end
   end

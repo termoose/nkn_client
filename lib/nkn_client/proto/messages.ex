@@ -18,6 +18,7 @@ defmodule NknClient.Proto.Messages do
   def outbound(payload, dest) do
     OutboundMessage.new(dest: dest, payload: payload,
                         max_holding_seconds: @holding_secs)
+		|> IO.inspect
     |> OutboundMessage.encode
   end
 
