@@ -52,6 +52,7 @@ defmodule NknClient.WS.Client do
   end
 
   def handle_new_sigchain_hash(block_hash) do
+    NknClient.Crypto.SigChain.set(block_hash)
     Logger.debug("SigChain: #{inspect(block_hash)}")
   end
 

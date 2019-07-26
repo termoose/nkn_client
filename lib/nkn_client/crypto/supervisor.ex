@@ -8,7 +8,8 @@ defmodule NknClient.Crypto.Supervisor do
 
   def init(:ok) do
     children = [
-      {Crypto.Keys, Application.get_env(:nkn_client, :seed)}
+      {Crypto.Keys, Application.get_env(:nkn_client, :seed)},
+      {Crypto.SigChain, nil}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
