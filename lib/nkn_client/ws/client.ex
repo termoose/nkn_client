@@ -3,7 +3,7 @@ defmodule NknClient.WS.Client do
   require Logger
 
   def start_link(url) do
-		WebSockex.start_link(url, __MODULE__, url, name: __MODULE__)
+    WebSockex.start_link(url, __MODULE__, url, name: __MODULE__)
   end
 
   def send_frame(msg) do
@@ -13,7 +13,7 @@ defmodule NknClient.WS.Client do
   # All messages from NKN nodes are :binary
   def handle_frame({:binary, frame}, state) do
     frame
-		|> IO.inspect
+    |> IO.inspect
     |> NknClient.Proto.Messages.inbound
     |> NknClient.WS.MessageSink.handle
 
