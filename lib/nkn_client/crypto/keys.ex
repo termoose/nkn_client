@@ -67,9 +67,9 @@ defmodule NknClient.Crypto.Keys do
     :enacl.box_beforenm(other_curve_pub_key, seed)
   end
 
-	def convert_secret_key(secret_key) do
-		:enacl.crypto_sign_ed25519_secret_to_curve25519(secret_key)
-	end
+  def convert_secret_key(secret_key) do
+    :enacl.crypto_sign_ed25519_secret_to_curve25519(secret_key)
+  end
 
   defp encrypt(message, dest_pub_key, seed) do
     shared_secret = get_shared_key(dest_pub_key, seed)
@@ -81,8 +81,8 @@ defmodule NknClient.Crypto.Keys do
 
   defp decrypt(message, src_pub_key, nonce, seed) do
     shared_secret = get_shared_key(src_pub_key, seed)
-		{:ok, decrypted} = :enacl.box_open_afternm(message, nonce, shared_secret)
-		decrypted
+    {:ok, decrypted} = :enacl.box_open_afternm(message, nonce, shared_secret)
+    decrypted
   end
 
   defp generate_keys_from_seed(seed) do
