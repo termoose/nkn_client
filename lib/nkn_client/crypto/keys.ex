@@ -27,6 +27,10 @@ defmodule NknClient.Crypto.Keys do
     GenServer.call(__MODULE__, {:decrypt, message, pub_key, nonce})
   end
 
+  def sign(message) do
+    GenServer.call(__MODULE__, {:sign, message})
+  end
+
   # Generate private key
   def init(%KeyData{seed: nil}) do
     {:ok, generate_keys()}
@@ -57,6 +61,10 @@ defmodule NknClient.Crypto.Keys do
     {:reply, decrypt(message, pub_key, nonce, keys.private_key), keys}
   end
 
+  def handle_call({:sign, message}, _from, keys) do
+    {:reply, sign(message, keys.private_key), keys}
+  end
+
   # This shared secret should be cached in an ETS table
   defp get_shared_key(other_pub_key, seed) do
     other_curve_pub_key = other_pub_key
@@ -69,6 +77,10 @@ defmodule NknClient.Crypto.Keys do
 
   def convert_secret_key(secret_key) do
     :enacl.crypto_sign_ed25519_secret_to_curve25519(secret_key)
+  end
+
+  defp sign(message, private_key) do
+    :enacl.sign_detached(message, private_key |> encode)
   end
 
   defp encrypt(message, dest_pub_key, seed) do

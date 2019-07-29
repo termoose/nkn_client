@@ -2,7 +2,7 @@ defmodule NknClient.Proto.Messages do
   use Protobuf, from: Path.expand("messages.proto", __DIR__)
   alias NknClient.Proto.Messages.OutboundMessage
   alias NknClient.Proto.Messages.InboundMessage
-	alias NknClient.Proto.Messages.ClientMessage
+  alias NknClient.Proto.Messages.ClientMessage
   alias NknClient.Proto.Payloads.Payload
   alias NknClient.Proto.Payloads.Message
   import Logger
@@ -23,21 +23,21 @@ defmodule NknClient.Proto.Messages do
   end
 
   def inbound(msg) do
-		# FIXME: make this into a |> pipeline
-		client_message = ClientMessage.decode(msg)
+    # FIXME: make this into a |> pipeline
+    client_message = ClientMessage.decode(msg)
     decoded_msg = InboundMessage.decode(client_message.message)
     message = Message.decode(decoded_msg.payload)
 
     case message.encrypted do
       true ->
         pub_key = NknClient.Proto.Payloads.get_pubkey(decoded_msg.src)
-				decrypted = NknClient.Crypto.Keys.decrypt(message.payload, pub_key, message.nonce)
-				dec_payload = NknClient.Proto.Payloads.Payload.decode(decrypted)
+	decrypted = NknClient.Crypto.Keys.decrypt(message.payload, pub_key, message.nonce)
+	dec_payload = NknClient.Proto.Payloads.Payload.decode(decrypted)
 
         %{"data" => decode_payload(dec_payload),
           "from" => decoded_msg.src}
       false ->
-				payload = Payload.decode(message.payload)
+	payload = Payload.decode(message.payload)
 
         %{"data" => decode_payload(payload),
           "from" => decoded_msg.src}
@@ -49,6 +49,6 @@ defmodule NknClient.Proto.Messages do
   end
 
   def decode_payload(%Payload{data: data} = payload) do
-		data
+    data
   end
 end

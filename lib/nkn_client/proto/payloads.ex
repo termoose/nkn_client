@@ -13,13 +13,13 @@ defmodule NknClient.Proto.Payloads do
     TextData.new(text: data)
     |> TextData.encode
     |> create_payload
-		|> IO.inspect
+    |> IO.inspect
     |> Payload.encode
   end
 
   def message(payload, false = _encrypt, dest) do
     Message.new(payload: payload, encrypted: false)
-		|> IO.inspect
+    |> IO.inspect
     |> Message.encode
   end
 
