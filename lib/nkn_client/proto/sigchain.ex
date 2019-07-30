@@ -4,8 +4,8 @@ defmodule NknClient.Proto.SigChain do
   alias NknClient.Proto.SigChain.SigChain
   import Logger
 
-  def sigchain_elem(public_key) do
-    SigChainElem.new(next_pubkey: public_key)
+  def sigchain_elem do
+    SigChainElem.new(next_pubkey: NknClient.WS.NodeInfo.get_public_key())
     |> SigChainElem.encode
   end
 
@@ -13,7 +13,7 @@ defmodule NknClient.Proto.SigChain do
     SigChain.new(
       nonce: random_integer(),
       data_size: payload_length,
-      block_hash: NknClient.Crypto.SigChain.get_hash()
+      block_hash: NknClient.WS.NodeInfo.get_block_hash(),
     )
   end
 
