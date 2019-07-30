@@ -23,8 +23,8 @@ defmodule NknClient.WS.Client do
   # We only receive :text type from the NKN server node,
   # none of the payloads from other nodes are :text
   def handle_frame({:text, frame} = msg, state) do
-		# If this JSON parsing fails we crash the entire
-    # WS supervisior tree and reconnect
+    # If this JSON parsing fails we crash the entire
+    # websocket supervision tree and reconnect
     json_frame = frame |> Poison.decode!
 
     case json_frame do
@@ -46,6 +46,7 @@ defmodule NknClient.WS.Client do
   end
 
   def handle_set_client(data) do
+    Logger.debug("Client: #{inspect(data)}")
     %{"sigChainBlockHash" => block_hash} = data
 
     handle_new_sigchain_hash(block_hash)

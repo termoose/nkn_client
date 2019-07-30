@@ -13,7 +13,7 @@ defmodule NknClient.Crypto.SigChain do
     GenServer.cast(__MODULE__, {:set, hash})
   end
 
-  def get do
+  def get_hash do
     GenServer.call(__MODULE__, :get)
   end
 
