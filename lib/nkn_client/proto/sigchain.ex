@@ -14,11 +14,19 @@ defmodule NknClient.Proto.SigChain do
       nonce: random_integer(),
       data_size: payload_length,
       block_hash: NknClient.WS.NodeInfo.get_block_hash(),
+      src_id: hash(NknClient.Crypto.Keys.get_public_key()),
+      src_pubkey: NknClient.Crypto.Keys.get_public_key()
     )
   end
 
   def random_integer do
     <<n :: 32>> = :crypto.strong_rand_bytes(4)
     n
+  end
+
+  def hash(data) do
+    :crypto.hash(:sha256, data)
+    |> Base.encode16
+    |> String.downcase
   end
 end
