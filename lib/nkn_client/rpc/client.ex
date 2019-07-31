@@ -46,11 +46,11 @@ defmodule NknClient.RPC.Client do
   end
 
   defp get_host(url) do
-        {:ok, host} = HTTP.call(url, "getwsaddr",
-                                %{"address" => "#{NknClient.Crypto.address()}"})
+    {:ok, host} = HTTP.call(url, "getwsaddr",
+      %{"address" => "#{NknClient.Crypto.address()}"})
 
-				# We only care about the RPC address for now
-				%{"addr" => addr} = host
-				addr
+    # We only care about the RPC address for now
+    %{"addr" => addr} = host
+    addr
   end
 end

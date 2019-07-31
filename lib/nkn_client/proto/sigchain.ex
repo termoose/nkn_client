@@ -14,8 +14,8 @@ defmodule NknClient.Proto.SigChain do
       nonce: random_integer(),
       data_size: payload_length,
       block_hash: NknClient.WS.NodeInfo.get_block_hash(),
-      src_id: hash(NknClient.Crypto.Keys.get_public_key()),
-      src_pubkey: NknClient.Crypto.Keys.get_public_key()
+      src_id: hash(NknClient.Crypto.address()),
+      src_pubkey: NknClient.Crypto.pub_key()
     )
   end
 

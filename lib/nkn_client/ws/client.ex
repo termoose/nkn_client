@@ -46,7 +46,6 @@ defmodule NknClient.WS.Client do
   end
 
   def handle_set_client(data) do
-    Logger.debug("Client: #{inspect(data)}")
     %{"sigChainBlockHash" => block_hash,
       "node" => %{"pubkey" => public_key}} = data
 

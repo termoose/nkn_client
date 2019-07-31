@@ -4,6 +4,10 @@ defmodule NknClient.Crypto do
     |> get_address
   end
 
+  def pub_key do
+    NknClient.Crypto.Keys.get_public_key()
+  end
+
   def keys do
     NknClient.Crypto.Keys.get_keys()
   end
