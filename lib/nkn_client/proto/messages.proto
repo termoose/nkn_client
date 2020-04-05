@@ -1,20 +1,6 @@
 syntax = "proto3";
 
-package client;
-
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-
-option (gogoproto.gostring_all) = true;
-option (gogoproto.goproto_stringer_all) = false;
-option (gogoproto.stringer_all) =  true;
-option (gogoproto.marshaler_all) = true;
-option (gogoproto.sizer_all) = true;
-option (gogoproto.unmarshaler_all) = true;
-
- // For tests
-option (gogoproto.testgen_all) = true;
-option (gogoproto.equal_all) = true;
-option (gogoproto.populate_all) = true;
+package messages;
 
 enum ClientMessageType {
   OUTBOUND_MESSAGE = 0;
@@ -22,9 +8,15 @@ enum ClientMessageType {
   RECEIPT = 2;
 }
 
+enum CompressionType {
+  COMPRESSION_NONE = 0;
+  COMPRESSION_ZLIB = 1;
+}
+
 message ClientMessage {
   ClientMessageType message_type = 1;
   bytes message = 2;
+  CompressionType compression_type = 3;
 }
 
 message OutboundMessage {
@@ -35,6 +27,7 @@ message OutboundMessage {
   uint32 nonce = 5;
   bytes block_hash = 6;
   repeated bytes signatures = 7;
+  repeated bytes payloads = 8;
 }
 
 message InboundMessage {
