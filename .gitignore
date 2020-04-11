@@ -23,3 +23,9 @@ erl_crash.dump
 nkn_client-*.tar
 
 mix.lock
+
+# Emacs
+*~
+
+# lsp server
+.elixir_ls
