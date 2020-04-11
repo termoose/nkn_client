@@ -9,7 +9,7 @@ defmodule NknClient.WS do
 
   def init(state) do
     %{"Action" => "setClient", "Addr" => "#{NknClient.Crypto.address()}"}
-    |> Poison.encode!()
+    |> Jason.encode!()
     |> send_txt
 
     {:ok, state}

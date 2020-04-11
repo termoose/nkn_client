@@ -67,7 +67,7 @@ defmodule NknClient do
       def handle_events(events, _from, {module, state}) do
         Enum.map(events, fn
           {:text, event} ->
-            handle_text_event({module, event |> Poison.decode!})
+            handle_text_event({module, event |> Jason.decode!})
 
           event ->
             handle_binary_event({module, event})

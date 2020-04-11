@@ -24,7 +24,7 @@ defmodule NknClient.WS.Client do
   def handle_frame({:text, frame} = msg, state) do
     # If this JSON parsing fails we crash the entire
     # websocket supervision tree and reconnect
-    json_frame = frame |> Poison.decode!()
+    json_frame = frame |> Jason.decode!()
 
     case json_frame do
       %{"Error" => 48001} ->
