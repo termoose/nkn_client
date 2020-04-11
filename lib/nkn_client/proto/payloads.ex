@@ -45,7 +45,7 @@ defmodule NknClient.Proto.Payloads do
   defp process_dest(dest) when is_binary(dest) do
     pubic_key = Util.addr_to_pubkey(dest)
 
-    if String.length(pubic_key) < :enacl.box_public_key_bytes() do
+    if String.length(pubic_key) < :enacl.box_PUBLICKEYBYTES() do
       # TODO: registered name
       raise "registered name has not been implemented"
     else

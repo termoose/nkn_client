@@ -42,7 +42,7 @@ defmodule NknClient.MixProject do
       {:websockex, "~> 0.4.0"},
       {:gen_stage, "~> 0.14"},
       {:exprotobuf, "~> 1.2"},
-      {:enacl, git: "git@github.com:termoose/enacl.git", branch: "sign-seed-keypair"},
+      {:enacl, "~> 1.0"},
       {:ex_doc, "~> 0.18", only: :dev}
     ]
   end

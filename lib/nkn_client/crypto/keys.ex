@@ -120,7 +120,7 @@ defmodule NknClient.Crypto.Keys do
   end
 
   defp random_nonce do
-    :enacl.randombytes(:enacl.box_nonce_size)
+    :enacl.randombytes(:enacl.box_NONCEBYTES())
   end
 
   def encode(key) do
