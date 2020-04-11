@@ -13,9 +13,8 @@ defmodule NknClient.WS.Client do
   # All messages from NKN nodes are :binary
   def handle_frame({:binary, frame}, state) do
     frame
-    |> IO.inspect
-    |> NknClient.Proto.Messages.inbound
-    |> NknClient.WS.MessageSink.handle
+    |> NknClient.Proto.Messages.inbound()
+    |> NknClient.WS.MessageSink.handle()
 
     {:ok, state}
   end
@@ -25,7 +24,7 @@ defmodule NknClient.WS.Client do
   def handle_frame({:text, frame} = msg, state) do
     # If this JSON parsing fails we crash the entire
     # websocket supervision tree and reconnect
-    json_frame = frame |> Poison.decode!
+    json_frame = frame |> Poison.decode!()
 
     case json_frame do
       %{"Error" => 48001} ->
@@ -39,15 +38,13 @@ defmodule NknClient.WS.Client do
 
       _ ->
         NknClient.WS.MessageSink.handle(msg)
-
     end
 
     {:ok, state}
   end
 
   def handle_set_client(data) do
-    %{"sigChainBlockHash" => block_hash,
-      "node" => %{"pubkey" => public_key}} = data
+    %{"sigChainBlockHash" => block_hash, "node" => %{"pubkey" => public_key}} = data
 
     handle_new_sigchain_hash(block_hash)
     NknClient.WS.NodeInfo.set_public_key(public_key)
@@ -62,14 +59,14 @@ defmodule NknClient.WS.Client do
     # which should never happen anyway
     %{"Result" => body} = json_frame
 
-    Logger.error("Wrong node, changing to: #{inspect(body)}");
+    Logger.error("Wrong node, changing to: #{inspect(body)}")
 
     # Signal RPC to return new correct node next time
     NknClient.RPC.set_address(body)
 
     # This will tear down the entire WS supervisor
     # since it's :one_for_all
-    exit(:normal);
+    exit(:normal)
   end
 
   def terminate(reason, _state) do
