@@ -5,9 +5,11 @@ defmodule NknClient.Crypto.Keys do
   alias NknClient.Crypto.KeyData
 
   def start_link(seed) do
-    GenServer.start_link(__MODULE__,
-                         %KeyData{seed: seed},
-                         name: __MODULE__)
+    GenServer.start_link(
+      __MODULE__,
+      %KeyData{seed: seed},
+      name: __MODULE__
+    )
   end
 
   # Public API
@@ -43,10 +45,11 @@ defmodule NknClient.Crypto.Keys do
 
   def handle_call(:get_keys, _from, keys) do
     {:reply,
-     %KeyData{public_key: encode(keys.public_key),
-              private_key: encode(keys.private_key),
-              seed: encode(keys.seed)},
-     keys}
+     %KeyData{
+       public_key: encode(keys.public_key),
+       private_key: encode(keys.private_key),
+       seed: encode(keys.seed)
+     }, keys}
   end
 
   def handle_call(:get_public, _from, keys) do
@@ -67,10 +70,11 @@ defmodule NknClient.Crypto.Keys do
 
   # This shared secret should be cached in an ETS table
   defp get_shared_key(other_pub_key, seed) do
-    other_curve_pub_key = other_pub_key
-    |> String.upcase
-    |> Base.decode16!
-    |> :enacl.crypto_sign_ed25519_public_to_curve25519
+    other_curve_pub_key =
+      other_pub_key
+      |> String.upcase()
+      |> Base.decode16!()
+      |> :enacl.crypto_sign_ed25519_public_to_curve25519()
 
     :enacl.box_beforenm(other_curve_pub_key, seed)
   end
@@ -87,8 +91,7 @@ defmodule NknClient.Crypto.Keys do
     shared_secret = get_shared_key(dest_pub_key, seed)
     nonce = random_nonce()
 
-    %{cipher_text: :enacl.box_afternm(message, nonce, shared_secret),
-      nonce: nonce}
+    %{cipher_text: :enacl.box_afternm(message, nonce, shared_secret), nonce: nonce}
   end
 
   defp decrypt(message, src_pub_key, nonce, seed) do
@@ -100,27 +103,27 @@ defmodule NknClient.Crypto.Keys do
   defp generate_keys_from_seed(seed) do
     %{public: pub, secret: priv} = :enacl.sign_seed_keypair(seed)
 
-    %KeyData{private_key: convert_secret_key(priv),
-             public_key: pub,
-             seed: seed}
+    %KeyData{private_key: convert_secret_key(priv), public_key: pub, seed: seed}
   end
 
   def generate_keys do
     %{public: pub, secret: priv} = :enacl.sign_keypair()
 
-    %KeyData{private_key: convert_secret_key(priv),
-             public_key: pub,
-             seed: seed_from_private_key(priv)}
+    %KeyData{
+      private_key: convert_secret_key(priv),
+      public_key: pub,
+      seed: seed_from_private_key(priv)
+    }
   end
 
   defp seed_from_private_key(private_key) do
-    << seed :: binary-size(32), _ :: binary >> = private_key
+    <<seed::binary-size(32), _::binary>> = private_key
 
     seed
   end
 
   defp random_nonce do
-    :enacl.randombytes(:enacl.box_nonce_size)
+    :enacl.randombytes(:enacl.box_NONCEBYTES())
   end
 
   def encode(key) do
@@ -128,6 +131,6 @@ defmodule NknClient.Crypto.Keys do
   end
 
   def decode(key) do
-    Base.decode16!(key |> String.upcase)
+    Base.decode16!(key |> String.upcase())
   end
 end

@@ -3,45 +3,85 @@ defmodule NknClient.Proto.Payloads do
   alias NknClient.Proto.Payloads.Message
   alias NknClient.Proto.Payloads.Payload
   alias NknClient.Proto.Payloads.TextData
+  alias NknClient.Common.Util
+  alias NknClient.Proto.Types
 
+  @message_id_size 8
+
+  # TODO: reply_to_id, message_id
   def binary(data) do
-    Payload.new(type: :BINARY, data: data)
-    |> Payload.encode
+    pb_encode_payload(data, :BINARY, _reply_to_id = nil, _message_id = nil)
   end
 
+  # TODO: reply_to_id, message_id
   def text(data) do
     TextData.new(text: data)
-    |> TextData.encode
-    |> create_payload
-    |> IO.inspect
-    |> Payload.encode
+    |> TextData.encode()
+    |> pb_encode_payload(:TEXT, _reply_to_id = nil, _message_id = nil)
   end
 
-  def message(payload, false = _encrypt, dest) do
-    Message.new(payload: payload, encrypted: false)
-    |> IO.inspect
-    |> Message.encode
+  @spec message(pb_encode_payload :: binary(), Types.destination(), binary()) :: [
+          pb_encode_message :: binary()
+        ]
+  def message(payload, dest, encrypt?)
+
+  def message(_payload, dests, _encrypt?)
+      when is_list(dests) and 0 == length(dests) do
+    raise "Proto: dests is an empty list"
   end
 
-  def message(payload, true = _encrypt, dest) do
-    Message.new(payload: payload)
-    |> Message.encode
+  def message(payload, dest, encrypt?) do
+    dest = process_dest(dest)
+    create_payload_message(payload, encrypt?, dest)
   end
 
-  def get_pubkey([id, pubkey]) do
-    pubkey
+  ## private
+
+  @spec process_dest(Types.destination()) :: Types.destination()
+  defp process_dest(dests) when is_list(dests) do
+    dests |> Enum.map(&process_dest/1)
   end
 
-  def get_pubkey([pubkey]) do
-    pubkey
+  defp process_dest(dest) when is_binary(dest) do
+    pubic_key = Util.addr_to_pubkey(dest)
+
+    if String.length(pubic_key) < :enacl.box_PUBLICKEYBYTES() do
+      # TODO: registered name
+      raise "registered name has not been implemented"
+    else
+      dest
+    end
   end
 
-  def get_pubkey(pubkey) do
-    get_pubkey(String.split(pubkey, "."))
+  defp create_payload_message(payload, encrypt?, _dest) do
+    if encrypt? do
+      # TODO: encrypt payload
+      raise "encrypt payload has not been implemented"
+    else
+      [pb_encode_message(payload, false)]
+    end
   end
 
-  def random_bytes(length), do: 1..length |> Enum.map(fn _ -> Enum.random(0..255) end)
-  defp create_payload(data), do: Payload.new(type: :TEXT, data: data, pid: random_bytes(8))
   defp unixtime, do: System.system_time(:second)
-end
 
+  ## pb
+
+  defp pb_encode_payload(data, type, reply_to_id, message_id) do
+    if reply_to_id do
+      [reply_to_id: reply_to_id]
+    else
+      [message_id: message_id || :enacl.randombytes(@message_id_size)]
+    end
+    |> Keyword.merge(type: type, data: data)
+    |> Payload.new()
+    |> Payload.encode()
+  end
+
+  defp pb_encode_message(payload, encrypt?, nonce \\ nil, encrypted_key \\ nil) do
+    [nonce: nonce, encrypted_key: encrypted_key]
+    |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+    |> Keyword.merge(payload: payload, encrypted: encrypt?)
+    |> Message.new()
+    |> Message.encode()
+  end
+end

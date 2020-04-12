@@ -8,9 +8,8 @@ defmodule NknClient.WS do
   end
 
   def init(state) do
-    %{"Action" => "setClient",
-      "Addr" => "#{NknClient.Crypto.address()}"}
-    |> Poison.encode!
+    %{"Action" => "setClient", "Addr" => "#{NknClient.Crypto.address()}"}
+    |> Jason.encode!()
     |> send_txt
 
     {:ok, state}
@@ -18,12 +17,12 @@ defmodule NknClient.WS do
 
   def send_text(dest, payload) do
     NknClient.Proto.text(dest, payload)
-    |> send_bin
+    |> Enum.each(&send_bin/1)
   end
 
   def send_bin(dest, payload) do
     NknClient.Proto.binary(dest, payload)
-    |> send_bin
+    |> Enum.each(&send_bin/1)
   end
 
   defp send_bin(bin) do
