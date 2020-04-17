@@ -15,13 +15,13 @@ defmodule NknClient.WS do
     {:ok, state}
   end
 
-  def send_text(dest, payload) do
-    NknClient.Proto.text(dest, payload)
+  def send_text(dest, message) do
+    NknClient.Proto.text(dest, message)
     |> Enum.each(&send_bin/1)
   end
 
-  def send_bin(dest, payload) do
-    NknClient.Proto.binary(dest, payload)
+  def send_bin(dest, message) do
+    NknClient.Proto.binary(dest, message)
     |> Enum.each(&send_bin/1)
   end
 
