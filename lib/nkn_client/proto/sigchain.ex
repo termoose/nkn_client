@@ -24,6 +24,8 @@ defmodule NknClient.Proto.SigChain do
         payloads |> List.first() |> List.duplicate(length(dests))
       end
 
+    sigchain_elem = pb_sigchain_elem()
+
     Enum.zip(dests, payloads)
     |> Enum.map(fn {dest, payload} ->
       dest_id = dest |> Hash.sha_256_bytes()
@@ -34,7 +36,7 @@ defmodule NknClient.Proto.SigChain do
       |> Map.merge(%{dest_id: dest_id, dest_pubkey: dest_pubkey, data_size: data_size})
       |> serialize_sig_chain_metadata()
       |> Hash.sha_256_bytes()
-      |> (fn digest -> digest <> pb_sigchain_elem() end).()
+      |> (fn digest -> digest <> sigchain_elem end).()
       |> Hash.sha_256_bytes()
       |> NknClient.Crypto.Keys.sign()
     end)
