@@ -57,12 +57,13 @@ defmodule NknClient.WS.Client do
   def handle_wrong_node(json_frame) do
     # This will crash the supervisor if there is no "Result",
     # which should never happen anyway
-    %{"Result" => body} = json_frame
+    # We only care about the RPC address for now
+    %{"Result" => %{"addr" => addr} = body} = json_frame
 
     Logger.error("Wrong node, changing to: #{inspect(body)}")
 
     # Signal RPC to return new correct node next time
-    NknClient.RPC.set_address(body)
+    NknClient.RPC.set_address(addr)
 
     # This will tear down the entire WS supervisor
     # since it's :one_for_all

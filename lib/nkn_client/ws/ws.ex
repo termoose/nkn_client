@@ -15,14 +15,14 @@ defmodule NknClient.WS do
     {:ok, state}
   end
 
-  def send_text(dest, payload) do
-    NknClient.Proto.text(dest, payload)
-    |> Enum.each(&send_bin/1)
+  def send_text(dest, message) do
+    NknClient.Proto.text(dest, message)
+    |> send_while_error(&send_bin/1)
   end
 
-  def send_bin(dest, payload) do
-    NknClient.Proto.binary(dest, payload)
-    |> Enum.each(&send_bin/1)
+  def send_bin(dest, message) do
+    NknClient.Proto.binary(dest, message)
+    |> send_while_error(&send_bin/1)
   end
 
   defp send_bin(bin) do
@@ -31,5 +31,14 @@ defmodule NknClient.WS do
 
   defp send_txt(msg) do
     Client.send_frame({:text, msg})
+  end
+
+  defp send_while_error(frames, func) do
+    Enum.reduce_while(frames, :ok, fn frame, respond ->
+      case func.(frame) do
+        :ok -> {:cont, respond}
+        {:error, _error_reason} = e -> {:halt, e}
+      end
+    end)
   end
 end

@@ -14,16 +14,15 @@ defmodule NknClient do
       @behaviour NknClient
 
       def init(state) do
-        {:consumer, state, subscribe_to: [{NknClient.WS.MessageSink,
-                                           cancel: :temporary}]}
+        {:consumer, state, subscribe_to: [{NknClient.WS.MessageSink, cancel: :temporary}]}
       end
 
-      def send_text(dest, payload) do
-        NknClient.WS.send_text(dest, payload)
+      def send_text(dest, message) do
+        NknClient.WS.send_text(dest, message)
       end
 
-      def send_bin(dest, payload) do
-        NknClient.WS.send_bin(dest, payload)
+      def send_bin(dest, message) do
+        NknClient.WS.send_bin(dest, message)
       end
 
       def get_keys do
@@ -52,8 +51,10 @@ defmodule NknClient do
         case action do
           "sendPacket" ->
             module.handle_send_packet(event)
+
           "receivePacket" ->
             module.handle_packet(event)
+
           "sendRawBlock" ->
             module.handle_raw_block(event)
         end
@@ -67,7 +68,7 @@ defmodule NknClient do
       def handle_events(events, _from, {module, state}) do
         Enum.map(events, fn
           {:text, event} ->
-            handle_text_event({module, event |> Jason.decode!})
+            handle_text_event({module, event |> Jason.decode!()})
 
           event ->
             handle_binary_event({module, event})
@@ -92,8 +93,7 @@ defmodule NknClient do
         Logger.debug("No implementation of #{pretty_func(func)}")
       end
 
-      defoverridable [handle_packet: 1, handle_send_packet: 1,
-                      handle_raw_block: 1]
+      defoverridable handle_packet: 1, handle_send_packet: 1, handle_raw_block: 1
     end
   end
 
@@ -102,7 +102,6 @@ defmodule NknClient do
   end
 
   def init(state) do
-    {:consumer, state, subscribe_to: [{NknClient.WS.MessageSink,
-                                       cancel: :temporary}]}
+    {:consumer, state, subscribe_to: [{NknClient.WS.MessageSink, cancel: :temporary}]}
   end
 end
