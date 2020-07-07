@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package sigchain;
 
+import "elixir.proto";
+option (elixir_module_prefix) = "NknClient.Proto.SigChain";
+
 enum SigAlgo {
   SIGNATURE = 0;
   VRF       = 1;

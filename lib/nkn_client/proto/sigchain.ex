@@ -1,5 +1,4 @@
 defmodule NknClient.Proto.SigChain do
-  use Protobuf, from: Path.expand("sigchain.proto", __DIR__)
   alias NknClient.Proto.SigChain.SigChainElem
   alias NknClient.Proto.SigChain.SigChain
 

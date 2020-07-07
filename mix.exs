@@ -40,8 +40,9 @@ defmodule NknClient.MixProject do
       {:hackney, "~> 1.7"},
       {:websockex, "~> 0.4.0"},
       {:gen_stage, "~> 0.14"},
-      {:exprotobuf, "~> 1.2"},
       {:enacl, "~> 1.0"},
+      {:protobuf, "~> 0.7.1"},
+      {:google_protos, "~> 0.1", only: :dev},
       {:ex_doc, "~> 0.18", only: :dev}
     ]
   end

@@ -84,3 +84,15 @@ end
 - Write more tests!
 - Declare type specifications on all functions
 - Investigate how we can achieve better throughput with our GenStage
+
+## Contribution
+
+### Generate pb.ex files from proto
+
+``` shell
+protoc \
+  --proto_path=./deps/protobuf/src/ \
+  --proto_path=./lib/nkn_client/proto/ \
+  --elixir_out=./lib/nkn_client/proto/ \
+  ./lib/nkn_client/proto/*.proto
+```
