@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package messages;
 
+import "elixir.proto";
+option (elixir_module_prefix) = "NknClient.Proto.Messages";
+
 enum ClientMessageType {
   OUTBOUND_MESSAGE = 0;
   INBOUND_MESSAGE = 1;

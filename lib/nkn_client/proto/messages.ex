@@ -1,5 +1,4 @@
 defmodule NknClient.Proto.Messages do
-  use Protobuf, from: Path.expand("messages.proto", __DIR__)
   alias NknClient.Proto.Messages.OutboundMessage
   alias NknClient.Proto.Messages.InboundMessage
   alias NknClient.Proto.Messages.ClientMessage

@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package payloads;
 
+import "elixir.proto";
+option (elixir_module_prefix) = "NknClient.Proto.Payloads";
+
 enum PayloadType {
   BINARY = 0;
   TEXT = 1;
